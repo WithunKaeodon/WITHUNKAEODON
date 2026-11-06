@@ -1,0 +1,567 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ค้นหาจากแผนที่</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: 'Prompt', sans-serif; display: flex; height: 100%; }
+
+  /* ── Filter Panel ── */
+  .filter-panel {
+    width: 260px;
+    min-width: 0;
+    flex-shrink: 0;
+    /* ใช้ scroll แทน auto เพื่อให้ browser รู้ขนาด scrollable area
+       overflow-x: clip แทน hidden เพื่อไม่ clamp popup ของ <select> */
+    overflow-y: auto;
+    overflow-x: clip;
+    border-right: 1px solid #ece8e1;
+    background: #faf8f5;
+    height: 100%;
+  }
+
+  .mf-section { padding: 14px 16px; border-bottom: 1px solid #ece8e1; }
+  .mf-label { font-size: 11px; font-weight: 700; color: #8b7355; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
+
+  .mf-input {
+    width: 100%; min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid #dcd3c6; border-radius: 8px;
+    font-family: 'Prompt', sans-serif; font-size: 13px;
+    box-sizing: border-box; background: #fff; color: #333;
+  }
+  .mf-input:focus { border-color: #8b7355; outline: none; box-shadow: 0 0 0 3px rgba(139,115,85,0.1); }
+
+  .mf-select {
+    width: 100%; min-width: 0; max-width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #dcd3c6; border-radius: 8px;
+    font-family: 'Prompt', sans-serif; font-size: 13px;
+    background: #fff; color: #333;
+    box-sizing: border-box;
+    /* ป้องกันข้อความล้น */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mf-select:focus { border-color: #8b7355; outline: none; }
+
+  .mf-radio { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #4a3f35; cursor: pointer; padding: 3px 0; }
+  .mf-radio input { accent-color: #8b7355; }
+  .mf-check { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #4a3f35; cursor: pointer; padding: 3px 0; }
+  .mf-check input { accent-color: #8b7355; }
+  .leaflet-popup-content { font-family: 'Prompt', sans-serif !important; }
+  #mapContainer { flex: 1; min-width: 0; height: 100%; }
+  .btn-reset { width: 100%; padding: 9px; background: none; border: 1px solid #dcd3c6; border-radius: 8px; font-family: 'Prompt', sans-serif; font-size: 13px; color: #8b7355; cursor: pointer; }
+  .btn-reset:hover { background: #f5f0e6; }
+</style>
+</head>
+<body>
+
+<div class="filter-panel">
+
+  <div class="mf-section">
+    <div class="mf-label">🔤 คำค้นหา</div>
+    <input type="text" id="mapKeyword" class="mf-input" placeholder="ชื่อที่พัก, ย่าน, จังหวัด..." oninput="applyFilter()">
+  </div>
+
+  <div class="mf-section">
+    <div class="mf-label">🏷️ ประเภทที่พัก</div>
+    <div style="display:flex; flex-direction:column; gap:7px;">
+      <label class="mf-radio"><input type="radio" name="mapType" value="" checked onchange="applyFilter()"> ทั้งหมด</label>
+      <label class="mf-radio"><input type="radio" name="mapType" value="DORMITORY" onchange="applyFilter()"> 🛏️ หอพัก/ห้องเช่า</label>
+      <label class="mf-radio"><input type="radio" name="mapType" value="APARTMENT" onchange="applyFilter()"> 🏢 อพาร์ตเมนต์</label>
+      <label class="mf-radio"><input type="radio" name="mapType" value="HOUSE" onchange="applyFilter()"> 🏡 บ้านเช่า</label>
+    </div>
+  </div>
+
+  <div class="mf-section">
+    <div class="mf-label">📍 ตำแหน่งที่ตั้ง</div>
+    <select id="mapProvince" class="mf-select" onchange="onProvinceChange()"><option value="">ทุกจังหวัด</option></select>
+    <select id="mapDistrict" class="mf-select" style="margin-top:6px;" disabled onchange="onDistrictChange()"><option value="">ทุกอำเภอ/เขต</option></select>
+    <select id="mapSubdistrict" class="mf-select" style="margin-top:6px;" disabled onchange="applyFilter()"><option value="">ทุกตำบล/แขวง</option></select>
+  </div>
+
+  <div class="mf-section">
+    <div class="mf-label">💰 ราคา (บาท/เดือน)</div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <input type="number" id="mapMinPrice" class="mf-input" placeholder="ต่ำสุด" oninput="applyFilter()" style="flex:1;">
+      <span style="color:#bbb;">–</span>
+      <input type="number" id="mapMaxPrice" class="mf-input" placeholder="สูงสุด" oninput="applyFilter()" style="flex:1;">
+    </div>
+    <select id="mapRentType" class="mf-select" style="margin-top:6px;" onchange="applyFilter()">
+      <option value="">ทุกรูปแบบการเช่า</option>
+      <option value="monthly">รายเดือน</option>
+      <option value="daily">รายวัน</option>
+      <option value="yearly">รายปี</option>
+      <option value="term">รายเทอม</option>
+    </select>
+  </div>
+
+  <div class="mf-section">
+    <div class="mf-label">🛏️ ภายในห้อง</div>
+    <div style="display:flex; flex-direction:column; gap:5px;">
+      <label class="mf-check"><input type="checkbox" class="rf" value="hasAirConditioner" checked onchange="applyFilter()"> เครื่องปรับอากาศ</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="hasFan" checked onchange="applyFilter()"> พัดลม</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="hasWaterHeater" checked onchange="applyFilter()"> เครื่องทำน้ำอุ่น</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="hasRefrigerator" checked onchange="applyFilter()"> ตู้เย็น</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="hasInRoomWifi" checked onchange="applyFilter()"> Wi-Fi ในห้อง</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="hasCableTV" checked onchange="applyFilter()"> เคเบิลทีวี</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="hasSofa" checked onchange="applyFilter()"> โซฟา</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="hasWorkDeskChair" checked onchange="applyFilter()"> โต๊ะทำงาน</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="hasStove" checked onchange="applyFilter()"> เตาปรุงอาหาร</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="isPetAllowed" checked onchange="applyFilter()"> อนุญาตสัตว์เลี้ยง</label>
+      <label class="mf-check"><input type="checkbox" class="rf" value="isSmokingAllowed" checked onchange="applyFilter()"> อนุญาตสูบบุหรี่</label>
+    </div>
+  </div>
+
+  <div class="mf-section">
+    <div class="mf-label">🏢 ในอาคาร</div>
+    <div style="display:flex; flex-direction:column; gap:5px;">
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasKeycardAccess" checked onchange="applyFilter()"> คีย์การ์ด</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasFingerprintAccess" checked onchange="applyFilter()"> ลายนิ้วมือ</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasCCTV" checked onchange="applyFilter()"> กล้อง CCTV</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasSecurityGuard" checked onchange="applyFilter()"> ยาม รปภ.</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasBikeParking" checked onchange="applyFilter()"> จอดมอเตอร์ไซค์</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasCarParking" checked onchange="applyFilter()"> จอดรถยนต์</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasSwimmingPool" checked onchange="applyFilter()"> สระว่ายน้ำ</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasFitness" checked onchange="applyFilter()"> ฟิตเนส</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasLaundry" checked onchange="applyFilter()"> ร้านซักรีด</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasElevator" checked onchange="applyFilter()"> ลิฟต์</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasShop" checked onchange="applyFilter()"> ร้านค้า</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasRestaurant" checked onchange="applyFilter()"> ร้านอาหาร</label>
+      <label class="mf-check"><input type="checkbox" class="bf" value="hasEvCharger" checked onchange="applyFilter()"> สถานีชาร์จ EV</label>
+    </div>
+  </div>
+
+  <div style="padding:14px 16px;">
+    <button onclick="resetFilter()" class="btn-reset">↺ ล้างทั้งหมด</button>
+  </div>
+
+</div>
+
+<div id="mapContainer"></div>
+
+<script src="js/map-utils.js"></script>
+<script>
+const API_BASE = 'http://localhost:5000/api';
+let allData   = [];
+let searchMap = null;
+let geoData   = [];
+
+// Thai collator สำหรับเรียงลำดับตามหลักพจนานุกรมราชบัณฑิตยสถาน
+const thaiCollator = new Intl.Collator('th', { sensitivity: 'base', usage: 'sort' });
+
+async function init() {
+    // โหลดข้อมูลพร้อมกัน
+    const [propRes, geoRes] = await Promise.all([
+        fetch(`${API_BASE}/properties?status=PUBLISHED`).then(r => r.json()).catch(() => ({ success: false })),
+        fetch('thailand-geography.json').then(r => r.json()).catch(() => [])
+    ]);
+
+    allData = propRes.success ? propRes.data : [];
+    geoData = geoRes;
+
+    // ถ้า API เก่าไม่ส่ง facilities มา ให้ดึงเพิ่มเองทีละรายการ
+    if (allData.length > 0 && allData[0].buildingFacility === undefined) {
+        await Promise.all(allData.map(async p => {
+            try {
+                const r = await fetch(`${API_BASE}/properties/${p.propertyId}`).then(x => x.json());
+                if (r.success) {
+                    p.roomFacility     = r.data.roomFacility     || null;
+                    p.buildingFacility = r.data.buildingFacility || null;
+                }
+            } catch (_) {}
+        }));
+    }
+
+    // เรียงจังหวัดตาม ก-ฮ ก่อน populate
+    geoData.sort((a, b) => thaiCollator.compare(a.name_th, b.name_th));
+
+    // populate province dropdown
+    const provSel = document.getElementById('mapProvince');
+    geoData.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.name_th; opt.text = p.name_th;
+        provSel.appendChild(opt);
+    });
+
+    // สร้างแผนที่
+    searchMap = createSearchMap('mapContainer', allData, null);
+    updateCount(allData);
+
+    // ── Fallback view: ครอบหมุดทั้งหมดหลังแผนที่พร้อม (ใช้เมื่อ Geolocation ล้มเหลว)
+    window._fitAllMarkers = function() {
+        if (!searchMap?.map) return;
+        const pinned = allData.filter(p => p.latitude && p.longitude);
+        if (pinned.length === 0) {
+            // ไม่มีหมุดเลย — ใช้ศูนย์กลางประเทศไทย
+            searchMap.map.setView([13.0, 101.0], 6);
+        } else if (pinned.length === 1) {
+            searchMap.map.setView([pinned[0].latitude, pinned[0].longitude], 13);
+        } else {
+            const bounds = L.latLngBounds(pinned.map(p => [p.latitude, p.longitude]));
+            searchMap.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+        }
+        searchMap.map.invalidateSize();
+    };
+
+    // ── เริ่ม Geolocation หลังแผนที่พร้อม
+    initGeolocation();
+}
+
+function updateCount(data) {
+    const withPin = data.filter(p => p.latitude && p.longitude).length;
+    // ส่งจำนวนไปยัง parent window
+    try { window.parent.postMessage({ type: 'mapCount', count: withPin }, '*'); } catch(e) {}
+}
+
+function applyFilter() {
+    if (!searchMap) return;
+    const keyword  = (document.getElementById('mapKeyword').value || '').toLowerCase();
+    const type     = document.querySelector('input[name="mapType"]:checked')?.value || '';
+    const province = document.getElementById('mapProvince').value;
+    const district = document.getElementById('mapDistrict').value;
+    const minP     = parseFloat(document.getElementById('mapMinPrice').value) || 0;
+    const maxP     = parseFloat(document.getElementById('mapMaxPrice').value) || 9999999;
+    const rentType = document.getElementById('mapRentType').value;
+    const roomFacs = [...document.querySelectorAll('.rf:not(:checked)')].map(cb => cb.value);
+    const bldgFacs = [...document.querySelectorAll('.bf:not(:checked)')].map(cb => cb.value);
+
+    const filtered = allData.filter(p => {
+        if (keyword && !`${p.title||''} ${p.province||''} ${p.district||''}`.toLowerCase().includes(keyword)) return false;
+        if (type && p.propertyType !== type) return false;
+        if (province && p.province !== province) return false;
+        if (district && p.district !== district) return false;
+        let price = 0;
+        if (rentType === 'monthly')     price = parseFloat(p.priceMonthly)  || 0;
+        else if (rentType === 'daily')  price = parseFloat(p.priceDaily)    || 0;
+        else if (rentType === 'yearly') price = parseFloat(p.priceYearly)   || 0;
+        else if (rentType === 'term')   price = parseFloat(p.priceSemester) || 0;
+        else price = parseFloat(p.priceMonthly || p.priceDaily || 0);
+        if (price < minP || price > maxP) return false;
+
+        // ถ้า "เอาติกออก" (unchecked) = ซ่อนที่พักที่มีสิ่งนั้น
+        // รองรับทั้ง nested object และ flat field จาก API ทุกเวอร์ชัน
+        for (const col of roomFacs) {
+            const val = (p.roomFacility ?? {})[col] ?? p[col];
+            if (val == 1) return false;
+        }
+        for (const col of bldgFacs) {
+            const val = (p.buildingFacility ?? {})[col] ?? p[col];
+            if (val == 1) return false;
+        }
+        return true;
+    });
+
+    searchMap.updateMarkers(filtered);
+    updateCount(filtered);
+}
+
+function resetFilter() {
+    document.getElementById('mapKeyword').value = '';
+    document.querySelector('input[name="mapType"][value=""]').checked = true;
+    document.getElementById('mapProvince').value = '';
+    document.getElementById('mapDistrict').innerHTML = '<option value="">ทุกอำเภอ/เขต</option>';
+    document.getElementById('mapDistrict').disabled = true;
+    document.getElementById('mapSubdistrict').innerHTML = '<option value="">ทุกตำบล/แขวง</option>';
+    document.getElementById('mapSubdistrict').disabled = true;
+    document.getElementById('mapMinPrice').value = '';
+    document.getElementById('mapMaxPrice').value = '';
+    document.getElementById('mapRentType').value = '';
+    document.querySelectorAll('.rf, .bf').forEach(cb => cb.checked = true);
+    applyFilter();
+}
+
+function onProvinceChange() {
+    const pName   = document.getElementById('mapProvince').value;
+    const distSel = document.getElementById('mapDistrict');
+    const subSel  = document.getElementById('mapSubdistrict');
+    distSel.innerHTML = '<option value="">ทุกอำเภอ/เขต</option>';
+    subSel.innerHTML  = '<option value="">ทุกตำบล/แขวง</option>';
+    distSel.disabled  = true; subSel.disabled = true;
+    if (!pName) { applyFilter(); return; }
+    const prov = geoData.find(p => p.name_th === pName);
+    if (!prov?.districts) { applyFilter(); return; }
+    const sortedDistricts = [...prov.districts].sort((a, b) => thaiCollator.compare(a.name_th, b.name_th));
+    sortedDistricts.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.name_th; opt.text = d.name_th;
+        distSel.appendChild(opt);
+    });
+    distSel.disabled = false;
+    applyFilter();
+}
+
+function onDistrictChange() {
+    const pName   = document.getElementById('mapProvince').value;
+    const aName   = document.getElementById('mapDistrict').value;
+    const subSel  = document.getElementById('mapSubdistrict');
+    subSel.innerHTML = '<option value="">ทุกตำบล/แขวง</option>';
+    subSel.disabled  = true;
+    if (!pName || !aName) { applyFilter(); return; }
+    const prov = geoData.find(p => p.name_th === pName);
+    const dist = prov?.districts?.find(d => d.name_th === aName);
+    if (!dist?.sub_districts) { applyFilter(); return; }
+    const sortedSubs = [...dist.sub_districts].sort((a, b) => thaiCollator.compare(a.name_th, b.name_th));
+    sortedSubs.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.name_th; opt.text = t.name_th;
+        subSel.appendChild(opt);
+    });
+    subSel.disabled = false;
+    applyFilter();
+}
+
+window.onload = init;
+
+// รับ message จาก parent เมื่อเปิด modal ซ้ำ → re-trigger geolocation + invalidateSize
+window.addEventListener('message', function(e) {
+    // ── reopen: invalidateSize + re-trigger geolocation ──────────────────
+    if (e.data?.type === 'reopen' && searchMap?.map) {
+        // invalidateSize หลายรอบเพื่อรอ iframe resize เสร็จก่อน
+        requestAnimationFrame(() => {
+            searchMap.map.invalidateSize();
+            setTimeout(() => {
+                searchMap.map?.invalidateSize();
+                // trigger geolocation หลัง layout stable
+                if (navigator.geolocation) {
+                    const btn = document.getElementById('myLocationBtn');
+                    if (btn) btn.innerHTML = '⏳';
+                    navigator.geolocation.getCurrentPosition(
+                        onGeoSuccess,
+                        onGeoError,
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    );
+                } else {
+                    // browser ไม่รองรับ geolocation → fitBounds ทันที
+                    if (typeof window._fitAllMarkers === 'function') window._fitAllMarkers();
+                }
+            }, 300);
+        });
+    }
+});
+
+// ════════════════════════════════════════════════════════
+// GEOLOCATION — ตำแหน่งปัจจุบันของผู้ใช้
+// ════════════════════════════════════════════════════════
+
+let userMarker    = null;  // marker วงกลมสีฟ้า
+let userLatLng    = null;  // พิกัดล่าสุดของผู้ใช้
+const DEFAULT_LAT = 13.7563;
+const DEFAULT_LNG = 100.5018; // กรุงเทพฯ
+
+// ตรวจสอบว่า context รองรับ Geolocation (ต้องการ HTTPS หรือ localhost)
+function _isSecureContext() {
+    return location.protocol === 'https:' ||
+           location.hostname === 'localhost' ||
+           location.hostname === '127.0.0.1';
+}
+
+// เรียกตอน init เสร็จ
+function initGeolocation() {
+    if (!navigator.geolocation) return; // browser ไม่รองรับ
+    if (!_isSecureContext()) {
+        console.warn('[MapView] Geolocation ต้องใช้ HTTPS หรือ localhost');
+        return;
+    }
+
+    const btn = document.getElementById('myLocationBtn');
+    if (btn) { btn.title = 'กำลังระบุตำแหน่ง...'; btn.innerHTML = '⏳'; }
+
+    navigator.geolocation.getCurrentPosition(
+        onGeoSuccess,
+        onGeoError,
+        {
+            enableHighAccuracy: true,   // รองรับทั้ง Desktop (Network/IP) และ Mobile (GPS)
+            timeout:            10000,
+            maximumAge:         0,      // ห้ามใช้ cache เก่า
+        }
+    );
+}
+
+function onGeoSuccess(pos) {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    userLatLng = [lat, lng];
+    console.log('[MapView] Geolocation success:', lat, lng);
+
+    if (searchMap?.map) {
+        // setView ก่อน แล้ว invalidateSize ทันที + หลายรอบ เพื่อแก้ปัญหา Desktop render
+        searchMap.map.setView([lat, lng], 14, { animate: true });
+        searchMap.map.invalidateSize();
+        setTimeout(() => searchMap.map?.invalidateSize(), 200);
+        setTimeout(() => searchMap.map?.invalidateSize(), 600);
+    }
+
+    placeUserMarker(lat, lng);
+
+    const btn = document.getElementById('myLocationBtn');
+    if (btn) { btn.innerHTML = '📍'; btn.title = 'ตำแหน่งของฉัน'; btn.style.color = '#2196f3'; }
+}
+
+function onGeoError(err) {
+    console.warn('[MapView] Geolocation error:', err.code, err.message);
+    const btn = document.getElementById('myLocationBtn');
+    if (btn) { btn.innerHTML = '📍'; btn.title = 'ไม่สามารถระบุตำแหน่งได้'; btn.style.color = '#aaa'; }
+
+    // แจ้ง toast 3 วินาที เฉพาะกรณีปฏิเสธสิทธิ์ แล้วซ่อนอัตโนมัติ
+    if (err.code === 1 /* PERMISSION_DENIED */) {
+        _showMapToast('กรุณาอนุญาตสิทธิ์ตำแหน่งในเบราว์เซอร์ แล้วลองกดปุ่ม 📍 อีกครั้ง', 3000);
+    }
+
+    // Fallback: ปรับมุมมองให้ครอบหมุดที่พักทั้งหมด
+    if (typeof window._fitAllMarkers === 'function') {
+        window._fitAllMarkers();
+    }
+}
+
+function placeUserMarker(lat, lng) {
+    if (!searchMap?.map) return;
+
+    if (userMarker) { searchMap.map.removeLayer(userMarker); userMarker = null; }
+
+    const userIcon = L.divIcon({
+        className: '',
+        html: `<div class="user-location-pin">
+                   <div class="user-location-dot"></div>
+                   <div class="user-location-ring"></div>
+               </div>`,
+        iconSize:   [30, 30],
+        iconAnchor: [15, 15],
+    });
+
+    userMarker = L.marker([lat, lng], { icon: userIcon, zIndexOffset: 1000 })
+        .addTo(searchMap.map)
+        .bindPopup('<div style="font-family:Prompt,sans-serif;font-size:13px;font-weight:600;color:#2196f3;">📍 ตำแหน่งของคุณ</div>',
+                   { offset: [0, -10] });
+}
+
+// ── ปุ่ม "ไปยังตำแหน่งของฉัน" (กดซ้ำได้) ──────────────
+function goToMyLocation() {
+    if (!navigator.geolocation) {
+        _showMapToast('เบราว์เซอร์นี้ไม่รองรับ Geolocation');
+        return;
+    }
+    if (!_isSecureContext()) {
+        _showMapToast('Geolocation ต้องใช้งานบน HTTPS ครับ');
+        return;
+    }
+
+    const btn = document.getElementById('myLocationBtn');
+    if (btn) btn.innerHTML = '⏳';
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            userLatLng = [lat, lng];
+
+            if (searchMap?.map) {
+                // setView ก่อน แล้ว invalidateSize ทันที + หลายรอบ
+                searchMap.map.setView([lat, lng], 15, { animate: true });
+                searchMap.map.invalidateSize();
+                setTimeout(() => searchMap.map?.invalidateSize(), 200);
+                setTimeout(() => searchMap.map?.invalidateSize(), 600);
+            }
+            placeUserMarker(lat, lng);
+            if (btn) { btn.innerHTML = '📍'; btn.style.color = '#2196f3'; }
+        },
+        (err) => {
+            console.warn('[MapView] goToMyLocation error:', err.code, err.message);
+            if (btn) { btn.innerHTML = '📍'; btn.style.color = '#aaa'; }
+            if (err.code === 1 /* PERMISSION_DENIED */) {
+                _showMapToast('ถูกปฏิเสธสิทธิ์ตำแหน่ง — คลิก 🔒 บน address bar แล้วอนุญาต Location', 3000);
+            } else if (err.code === 3 /* TIMEOUT */) {
+                _showMapToast('หมดเวลาดึงตำแหน่ง — กรุณาลองใหม่อีกครั้ง', 3000);
+            } else {
+                _showMapToast('ไม่สามารถระบุตำแหน่งได้ (' + err.message + ')', 3000);
+            }
+            // Fallback: ครอบหมุดที่พักทั้งหมด
+            if (typeof window._fitAllMarkers === 'function') {
+                window._fitAllMarkers();
+            }
+        },
+        {
+            enableHighAccuracy: true,
+            timeout:            10000,
+            maximumAge:         0,
+        }
+    );
+}
+
+// ── Toast เล็กๆ สำหรับ map-view ── หายอัตโนมัติตาม duration (default 3 วิ)
+function _showMapToast(msg, duration = 3000) {
+    const old = document.getElementById('_mapViewToast');
+    if (old) old.remove();
+    const t = document.createElement('div');
+    t.id = '_mapViewToast';
+    t.textContent = '📍 ' + msg;
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);' +
+        'background:rgba(44,33,22,.88);color:#fff;padding:10px 20px;border-radius:8px;' +
+        'font-family:Prompt,sans-serif;font-size:13px;z-index:9999;pointer-events:none;' +
+        'box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:90vw;text-align:center;';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), duration);
+}
+</script>
+
+<!-- ── My Location Button ── -->
+<button id="myLocationBtn"
+    onclick="goToMyLocation()"
+    title="ไปยังตำแหน่งของฉัน"
+    style="position:fixed; bottom:24px; right:24px; z-index:1000;
+           width:44px; height:44px; border-radius:50%;
+           background:white; border:none;
+           box-shadow:0 2px 12px rgba(0,0,0,0.2);
+           font-size:20px; cursor:pointer;
+           display:flex; align-items:center; justify-content:center;
+           transition:box-shadow 0.2s, transform 0.15s;
+           color:#555;"
+    onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.25)';this.style.transform='scale(1.08)'"
+    onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.2)';this.style.transform='scale(1)'">
+    📍
+</button>
+
+<!-- ── CSS สำหรับ user location marker ── -->
+<style>
+.user-location-pin {
+    position: relative;
+    width: 30px;
+    height: 30px;
+}
+.user-location-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px; height: 14px;
+    background: #2196f3;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(33,150,243,0.5);
+    z-index: 2;
+}
+.user-location-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: rgba(33,150,243,0.2);
+    animation: userPulse 2s ease-out infinite;
+}
+@keyframes userPulse {
+    0%   { transform: translate(-50%,-50%) scale(0.5); opacity: 0.8; }
+    100% { transform: translate(-50%,-50%) scale(1.6); opacity: 0;   }
+}
+</style>
+
+</body>
+</html>

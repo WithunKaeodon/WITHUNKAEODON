@@ -1,0 +1,421 @@
+/* =========================================
+   OakStay — Responsive CSS (Bootstrap override)
+   ========================================= */
+
+/* ── Bootstrap Navbar (shared header) ─────── */
+.oakstay-navbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2d9cc;
+    box-shadow: 0 2px 10px rgba(139,115,85,0.08);
+    padding: 8px 0;
+}
+.oakstay-navbar .navbar-brand img { height: 36px; width: auto; }
+.oakstay-navbar .navbar-brand span {
+    font-size: 22px; font-weight: 700;
+    color: #6b523f; font-family: 'Prompt', sans-serif;
+}
+.oakstay-navbar .navbar-toggler {
+    border-color: #dcd3c6;
+}
+.oakstay-navbar .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%238b7355' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+.oakstay-navbar .nav-link {
+    color: #555 !important; font-family: 'Prompt', sans-serif;
+    font-size: 14px; padding: 8px 12px !important;
+}
+.oakstay-navbar .nav-link:hover { color: #6b523f !important; }
+.oakstay-navbar .btn-orange-nav {
+    background: #8b7355; color: white; border: none;
+    border-radius: 8px; padding: 8px 16px;
+    font-family: 'Prompt', sans-serif; font-weight: 600;
+    font-size: 14px; white-space: nowrap;
+}
+.oakstay-navbar .btn-orange-nav:hover { background: #6b523f; color: white; }
+.oakstay-navbar .search-input-nav {
+    border-radius: 20px; border: 1px solid #dcd3c6;
+    padding: 6px 14px; font-size: 13px;
+    font-family: 'Prompt', sans-serif;
+    min-width: 200px;
+}
+@media (max-width: 991px) {
+    .oakstay-navbar .search-input-nav { min-width: 100%; margin: 8px 0; }
+    .oakstay-navbar .navbar-collapse { padding: 8px 0; }
+    .oakstay-navbar .nav-item { border-bottom: 1px solid #f0ece6; }
+}
+
+/* ── Property Grid ─────────────────────────── */
+@media (max-width: 576px) {
+    .property-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .card-title { font-size: 15px !important; }
+    .card-image { height: 160px !important; }
+    .card-price { font-size: 16px !important; }
+    .btn-chat-card { font-size: 12px !important; padding: 8px !important; }
+    .properties-wrapper { padding: 14px !important; min-height: unset !important; }
+}
+@media (min-width: 577px) and (max-width: 767px) {
+    .property-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; }
+    .properties-wrapper { padding: 16px !important; }
+}
+@media (min-width: 768px) and (max-width: 1099px) {
+    .property-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 18px !important; }
+}
+/* ≥ 1100px ใช้ 4 col จาก index.css */
+
+/* ── View Property 2-col layout ────────────── */
+@media (max-width: 768px) {
+    .page-layout {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+    .col-left, .col-right {
+        overflow: visible !important;
+        height: auto !important;
+    }
+    .col-left { border-right: none !important; border-bottom: 1px solid #e2d9cc; }
+    .main-image-wrap { height: 220px !important; }
+    #leafletMapView { min-height: 220px !important; }
+}
+
+/* ── Form pages (add/edit property) ────────── */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    .form-group { width: 100% !important; flex: unset !important; }
+    .container { padding: 0 12px !important; }
+}
+
+/* ── Profile sidebar ────────────────────────── */
+@media (max-width: 768px) {
+    .layout-container {
+        flex-direction: column !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+    /* scope .sidebar rules ให้เฉพาะ profile/layout-container ไม่ใช่ admin-page */
+    .layout-container .sidebar {
+        width: 100% !important;
+        position: relative !important;
+        height: auto !important;
+        flex-shrink: 0;
+    }
+    .layout-container .sidebar-nav {
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        padding: 0 !important;
+    }
+    .nav-item { white-space: nowrap; border-left: none !important; border-bottom: 3px solid transparent !important; }
+    .nav-item.active { border-bottom-color: #8b7355 !important; border-left: none !important; }
+    .sidebar-profile { display: none !important; }
+    .layout-container .main-content { overflow-y: visible !important; padding: 16px !important; }
+    .profile-card-large {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 16px !important;
+    }
+    .property-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── Chat ────────────────────────────────────── */
+@media (max-width: 768px) {
+    .chat-container { position: relative !important; }
+    .chat-container .sidebar {
+        position: absolute !important;
+        width: 100% !important;
+        height: calc(100% - 60px) !important;
+        z-index: 20 !important;
+        transition: transform 0.3s ease !important;
+    }
+    .chat-container .sidebar.hidden { transform: translateX(-100%) !important; }
+    .chat-area { width: 100% !important; }
+    .message { max-width: 85% !important; }
+}
+
+/* ── Admin ────────────────────────────────────── */
+@media (max-width: 768px) {
+    body.admin-page { flex-direction: column !important; }
+    .sidebar.admin-sidebar {
+        width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+    }
+    .menu-list {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+    }
+    .menu-item { white-space: nowrap; padding: 12px 16px !important; }
+    .main-content { overflow: visible !important; }
+    .data-table { font-size: 12px !important; }
+    .data-table th, .data-table td { padding: 8px 6px !important; }
+    .action-btn { padding: 4px 8px !important; font-size: 11px !important; margin-bottom: 4px !important; }
+}
+
+/* ── Hero Search Box ──────────────────────────── */
+@media (max-width: 768px) {
+    .hero { margin-top: 24px !important; margin-bottom: 24px !important; padding: 0 12px !important; }
+    .hero h1 { font-size: 22px !important; margin-bottom: 16px !important; }
+    .main-search-wrapper { border-radius: 10px !important; }
+    .search-tabs { padding: 0 12px !important; }
+    .search-tab { padding: 12px 14px !important; font-size: 13px !important; }
+    .search-inputs-row { padding: 12px !important; flex-direction: column !important; gap: 8px !important; }
+    .search-input-group { flex: unset !important; width: 100% !important; min-width: unset !important; }
+    .custom-select-group { width: 100% !important; min-width: unset !important; }
+    .price-box { width: 100% !important; }
+    .btn-search-primary { width: 100% !important; padding: 12px !important; }
+    .container { padding: 0 12px !important; margin-top: 20px !important; }
+    .section-title { font-size: 18px !important; }
+}
+
+@media (max-width: 576px) {
+    .hero h1 { font-size: 18px !important; }
+}
+
+/* ── Advanced Search Dropdown ─────────────────── */
+
+/* กล่อง dropdown — position:fixed ทั้ง desktop และ mobile
+   JS จะคำนวณ top/left ให้ใน _positionAdvDropdown() */
+.adv-search-dropdown {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 60px;       /* fallback ก่อน JS คำนวณ */
+    right: 16px;
+    left: auto;
+    width: min(650px, 92vw);
+    /* ล็อกความสูงไม่ให้ล้นหน้าจอเมื่อซูม */
+    max-height: calc(100vh - 120px);
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.13);
+    border: 1px solid #e8decb;
+    z-index: 9999;
+    overflow: hidden;
+    text-align: left;
+    cursor: default;
+    /* JS จะ override right/left ด้วย translateX ถ้าต้องการ clamp */
+    will-change: transform;
+}
+
+/* body: grid 2 คอลัมน์ + scroll แนวตั้ง — flex:1 ให้ขยายเต็มพื้นที่ที่เหลือ */
+.adv-search-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
+/* แต่ละ cell */
+.adv-cell {
+    padding: 16px 18px;
+    border-right: 1px solid #f0ece6;
+    border-bottom: 1px solid #f0ece6;
+}
+.adv-cell:nth-child(even) { border-right: none; }
+
+/* label หัวข้อ */
+.adv-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8b7355;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+}
+
+/* input / select ภายใน */
+.adv-input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #dcd3c6;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+.adv-select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 9px;
+    border: 1px solid #dcd3c6;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.adv-radio { cursor: pointer; font-size: 14px; }
+
+/* checkbox grid */
+.adv-check-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    font-size: 13px;
+}
+.adv-check {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* footer bar — ปุ่มค้นหา (sticky ติดล่างสุดของ dropdown เสมอ) */
+.adv-search-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    background: #fdfaf6;
+    border-top: 1px solid #f0ece6;
+    /* ล็อกติดล่างสุด ไม่ถูก scroll หายไป */
+    position: sticky;
+    bottom: 0;
+    flex-shrink: 0;
+    z-index: 10;
+}
+.adv-btn-reset {
+    background: none;
+    border: none;
+    color: #8b7355;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+.adv-btn-search {
+    background: #8b7355;
+    color: white;
+    padding: 10px 28px;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.adv-btn-search:hover { background: #6b523f; }
+
+/* ── Mobile ≤768px: adv-search-dropdown เป็น centered floating panel ── */
+@media (max-width: 768px) {
+    /* adv-search-dropdown: centered floating panel */
+    .adv-search-dropdown {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        width: 92vw !important;
+        max-width: 92vw !important;
+        max-height: 85vh !important;
+        border-radius: 16px !important;
+        z-index: 9999 !important;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.22) !important;
+        flex-direction: column !important;
+    }
+
+    /* header bar บนสุดของ dropdown mobile — ปุ่มปิด */
+    .adv-mobile-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid #f0ece6;
+        background: #fdfaf6;
+        border-radius: 16px 16px 0 0;
+        flex-shrink: 0;
+    }
+    .adv-mobile-header-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #4a3f35;
+    }
+    .adv-mobile-close {
+        background: none;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        color: #8b7355;
+        line-height: 1;
+        padding: 2px 8px;
+    }
+
+    /* body: 1 คอลัมน์ scroll */
+    .adv-search-body {
+        grid-template-columns: 1fr;
+    }
+    .adv-cell { border-right: none; }
+
+    /* footer: ปุ่มแบบ full-width */
+    .adv-search-footer {
+        flex-direction: column;
+        gap: 8px;
+        border-radius: 0 0 16px 16px;
+    }
+    .adv-btn-search { width: 100%; padding: 13px; font-size: 16px; }
+    .adv-btn-reset   { text-align: center; }
+}
+
+/* ซ่อน .adv-mobile-header บน desktop */
+.adv-mobile-header { display: none; }
+
+/* ── Modals ────────────────────────────────────── */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        padding: 16px !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+    }
+    #leafletMapAdd, #leafletMapEdit { height: 280px !important; }
+}
+
+/* ── General Mobile Fixes ──────────────────────── */
+@media (max-width: 576px) {
+    h1 { font-size: 20px !important; }
+    .section-title { font-size: 14px !important; }
+    .card-title { font-size: 15px !important; }
+    .info-grid { grid-template-columns: 1fr !important; }
+    .btn-add { font-size: 13px !important; padding: 8px 12px !important; }
+    .page-btn { padding: 6px 10px !important; font-size: 12px !important; }
+    .pagination { gap: 4px !important; flex-wrap: wrap !important; justify-content: center !important; }
+    .footer-container { grid-template-columns: 1fr !important; gap: 20px !important; }
+    .site-footer { padding: 24px 16px !important; }
+}
+
+/* Prevent horizontal scroll — ใช้ clip แทน hidden เพื่อไม่ขัด sticky */
+html { overflow-x: clip; }
+body { max-width: 100%; overflow-x: clip; }
+
+/* ── Fixed Header — ทำงานทุกหน้า ────────────────────────── */
+.header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    width: 100% !important;
+    background: white !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
+}
+
+/* ── เพิ่ม padding-top ให้ body เพื่อชดเชย fixed header ──── */
+body:not(.admin-page) {
+    padding-top: 70px !important;
+}
+
+/* ── ป้องกัน overflow ────────────────────────────────────── */
+html, body {
+    overflow-x: clip !important;
+}

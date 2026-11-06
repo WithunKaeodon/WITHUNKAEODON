@@ -1,0 +1,23 @@
+<div id="mapSearchModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:5000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+    <div style="background:white; border-radius:16px; width:97%; max-width:1200px; height:92vh; display:flex; flex-direction:column; box-shadow:0 10px 40px rgba(0,0,0,0.2); overflow:clip;">
+
+        <!-- header เหมือน index.html เป๊ะ -->
+        <div style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; padding:14px 20px; border-bottom:1px solid #f0ece6;">
+            <h2 style="margin:0; color:#8b7355; font-size:18px; font-family:'Prompt',sans-serif;">🗺️ ค้นหาที่พักจากแผนที่</h2>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span id="mapResultCount" style="font-size:13px; color:#888; font-family:'Prompt',sans-serif;"></span>
+                <button onclick="document.getElementById('mapViewIframe')?.contentWindow?.resetFilter()" style="padding:6px 14px; background:none; border:1px solid #dcd3c6; border-radius:8px; font-family:'Prompt',sans-serif; font-size:13px; color:#8b7355; cursor:pointer;">↺ ล้างทั้งหมด</button>
+                <span onclick="closeMapModal()" style="cursor:pointer; font-size:26px; color:#aaa; line-height:1;">&times;</span>
+            </div>
+        </div>
+
+        <!-- iframe -->
+        <iframe id="mapViewIframe"
+            src="about:blank"
+            style="flex:1; min-height:0; border:none; width:100%; display:block;"
+            allow="geolocation"
+            scrolling="no">
+        </iframe>
+
+    </div>
+</div>

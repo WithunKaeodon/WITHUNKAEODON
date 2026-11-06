@@ -1,0 +1,161 @@
+﻿<div class="custom-popup-overlay" id="customPopup">
+    <div class="custom-popup-box">
+        <div class="custom-popup-icon" id="popupIcon">ℹ️</div>
+        <h3 class="custom-popup-title" id="popupTitle">แจ้งเตือน</h3>
+        <p class="custom-popup-message" id="popupMessage">รายละเอียดข้อความ</p>
+        <div class="custom-popup-buttons" id="popupButtons"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="authModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">ยินดีต้อนรับสู่ OakStay</h2>
+      <span class="close-modal-btn" onclick="closeAuthModal()">&times;</span>
+    </div>
+    <div class="auth-tab-container">
+      <button class="auth-tab-btn active" id="btn-login" onclick="switchAuthTab('loginTab')">เข้าสู่ระบบ</button>
+      <button class="auth-tab-btn" id="btn-register" onclick="switchAuthTab('registerTab')">สมัครสมาชิก</button>
+    </div>
+    <div id="loginTab" class="form-container" style="display: block;">
+      <div class="input-group"><label>อีเมล</label><input type="email" id="loginEmail" required></div>
+      <div class="input-group"><label>รหัสผ่าน</label>
+        <div class="password-wrapper"><input type="password" id="loginPass" required><span class="toggle-password" onclick="togglePassword('loginPass')">👁️</span></div>
+      </div>
+      <button class="submit-btn" onclick="loginUser(event)">เข้าสู่ระบบ</button>
+      <!-- บัญชีจำลองสำหรับทดสอบ (ซ่อนไว้ชั่วคราว)
+      <div style="margin-top: 20px; text-align: center;">
+        <hr style="border: 0; border-top: 1px solid #ddd; margin-bottom: -10px;">
+        <span style="background: #fff; padding: 0 10px; color: #888; font-size: 13px;">บัญชีจำลองสำหรับทดสอบ</span>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+          <button type="button" style="background: #e6f0ff; color: #2b7bb9; border: 1px solid #2b7bb9; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; font-family: 'Prompt', sans-serif;" onclick="quickLogin('test1@gmail.com', '123456')">👤 User 1</button>
+          <button type="button" style="background: #fff0e6; color: #ff7a00; border: 1px solid #ff7a00; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; font-family: 'Prompt', sans-serif;" onclick="quickLogin('test2@gmail.com', '123456')">🏠 User 2</button>
+          <button type="button" style="background: #ffe6e6; color: #cc0000; border: 1px solid #cc0000; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; font-family: 'Prompt', sans-serif;" onclick="quickLogin('admin', 'admin1234')">🛡️ Admin</button>
+        </div>
+      </div>
+      -->
+    </div>
+    <div id="registerTab" class="form-container" style="display: none;">
+  <div class="input-row">
+    <div class="input-group half-width">
+      <label>ชื่อ <span style="color:red">*</span></label>
+      <input type="text" id="regFirstName" required placeholder="เช่น สมชาย">
+    </div>
+    <div class="input-group half-width">
+      <label>นามสกุล <span style="color:red">*</span></label>
+      <input type="text" id="regLastName" required placeholder="เช่น ใจดี">
+    </div>
+  </div>
+
+  <div class="input-group">
+    <label>อีเมล <span style="color:red">*</span></label>
+    <input type="email" id="regEmail" required placeholder="เช่น somchai@email.com">
+  </div>
+  
+  <div class="input-row">
+    <div class="input-group half-width">
+      <label>รหัสผ่าน <span style="color:red">*</span></label>
+      <div class="password-wrapper">
+        <input type="password" id="regPass" required minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร">
+        <span class="toggle-password" onclick="togglePassword('regPass')">👁️</span>
+      </div>
+    </div>
+    <div class="input-group half-width">
+      <label>ยืนยันรหัสผ่าน <span style="color:red">*</span></label>
+      <div class="password-wrapper">
+        <input type="password" id="regConfirmPass" required minlength="6" placeholder="กรอกให้ตรงกัน">
+        <span class="toggle-password" onclick="togglePassword('regConfirmPass')">👁️</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="input-group">
+    <label>เบอร์โทรศัพท์</label>
+    <input type="tel" id="regPhone"
+        placeholder="เช่น 0812345678"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        maxlength="10"
+        oninput="
+            this.value = this.value.replace(/[^0-9]/g, '');
+            var err = document.getElementById('regPhoneErr');
+            if (this.value && !/^[0-9]+$/.test(this.value)) {
+                err.style.display = 'block';
+            } else {
+                err.style.display = 'none';
+            }
+        ">
+    <small id="regPhoneErr" style="display:none;color:#e53e3e;font-size:12px;margin-top:4px;">
+        ⚠️ กรอกเฉพาะตัวเลขเท่านั้น (0-9)
+    </small>
+  </div>
+  
+  <div class="checkbox-group" style="margin-top: 15px; margin-bottom: 20px;">
+    <input type="checkbox" id="regTerms" required>
+    <label for="regTerms" style="margin: 0; display: inline; font-size: 13px;">
+      ยอมรับเงื่อนไข <a href="#">ข้อตกลงการใช้งาน</a> และ <a href="#">นโยบายความเป็นส่วนตัว</a> <span style="color:red">*</span>
+    </label>
+  </div>
+  
+  <button class="submit-btn" onclick="registerUser(event)">สมัครสมาชิก</button>
+</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reportModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title" style="color: #dc3545;">🚩 รายงานปัญหา</h2>
+      <span class="close-modal-btn" onclick="document.getElementById('reportModal').style.display='none'">&times;</span>
+    </div>
+    <form id="reportForm" onsubmit="submitReport(event)">
+      <input type="hidden" id="repPropId">
+      <input type="hidden" id="repOwnerEmail">
+      <input type="hidden" id="repPropName">
+      <p style="margin-top: 0; color: #555; font-size: 15px;">ระบุสาเหตุที่ต้องการรายงานที่พัก <strong><span id="repPropNameDisplay"></span></strong>:</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+        <label style="cursor: pointer;"><input type="checkbox" name="reportReason" value="ข้อมูลที่พักไม่ถูกต้อง/หลอกลวง"> ข้อมูลที่พักไม่ถูกต้อง/หลอกลวง</label>
+        <label style="cursor: pointer;"><input type="checkbox" name="reportReason" value="รูปภาพไม่เหมาะสม/ไม่ตรงปก"> รูปภาพไม่เหมาะสม/ไม่ตรงปก</label>
+        <label style="cursor: pointer;"><input type="checkbox" name="reportReason" value="ติดต่อเจ้าของไม่ได้"> ติดต่อเจ้าของไม่ได้ / ไม่มีที่พักนี้จริง</label>
+        <label style="cursor: pointer;"><input type="checkbox" name="reportReason" value="เนื้อหาผิดกฎหมาย/อนาจาร"> เนื้อหาผิดกฎหมาย/อนาจาร</label>
+        <label style="cursor: pointer;"><input type="checkbox" id="reportReasonOtherCb" value="อื่นๆ"> อื่นๆ</label>
+        <textarea id="reportReasonOtherText" rows="3" placeholder="โปรดระบุสาเหตุเพิ่มเติม..." style="display: none; width: 100%; box-sizing: border-box; padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-family: 'Prompt', sans-serif; resize: vertical;"></textarea>
+      </div>
+      
+      <button type="submit" class="submit-btn" style="background-color: #dc3545;">ส่งรายงานให้ Admin</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="bannedAppealModal">
+  <div class="modal-content" style="max-width:480px;">
+    <div class="modal-header">
+      <h2 class="modal-title" style="color:#dc3545;">🚫 บัญชีถูกระงับการใช้งาน</h2>
+      <span class="close-modal-btn" onclick="closeBannedAppealModal()">&times;</span>
+    </div>
+
+    <input type="hidden" id="bannedEmail">
+
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px 16px;margin-bottom:16px;">
+      <div style="font-size:15px;color:#991b1b;font-weight:600;margin-bottom:8px;">⚠️ บัญชีของคุณถูกระงับการใช้งาน</div>
+      <div style="font-size:13px;color:#666;margin-bottom:6px;">เหตุผลที่ถูกระงับ:</div>
+      <div id="bannedReasonDisplay" style="font-size:14px;color:#333;background:#fff;border:1px solid #e0d6d0;border-radius:6px;padding:10px 12px;line-height:1.5;"></div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="font-weight:600;font-size:14px;color:#333;margin-bottom:8px;display:block;">
+        📝 ยื่นคำร้องขอปลดแบน
+        <span style="font-weight:400;font-size:12px;color:#888;display:block;margin-top:2px;">หากคุณคิดว่าเป็นการเข้าใจผิดหรือถูกระงับผิดบัญชี สามารถส่งข้อความแจ้ง Admin เพื่อพิจารณาได้</span>
+      </label>
+      <textarea id="appealReason" rows="5" placeholder="ระบุเหตุผลหรือแจ้งว่าอาจมีการเข้าใจผิด..."
+        style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-family:inherit;font-size:14px;box-sizing:border-box;resize:vertical;line-height:1.6;"></textarea>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeBannedAppealModal()" style="flex:1;padding:10px;border:1px solid #ccc;border-radius:6px;background:#f3f4f6;color:#374151;font-weight:600;cursor:pointer;font-size:14px;">ตกลง</button>
+      <button onclick="submitAppealForm()" style="flex:1;padding:10px;border:none;border-radius:6px;background:#2b7bb9;color:#fff;font-weight:600;cursor:pointer;font-size:14px;">📤 ส่งคำร้องขอปลดแบน</button>
+    </div>
+  </div>
+</div>
+

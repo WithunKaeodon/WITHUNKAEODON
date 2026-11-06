@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Icon.svg">
+<title>แก้ไขประกาศที่พัก - OakStay</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="css/edit-property.css">
+<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+<div id="shared-header"></div>
+<script src="js/shared-header.js"></script>
+
+<div class="page-wrapper">
+
+  <!-- ── Top bar ── -->
+  <div class="page-topbar">
+    <div class="topbar-title">✏️ แก้ไขที่พักอาศัย</div>
+    <div class="topbar-actions">
+      <button type="button" class="btn-cancel-top" onclick="confirmGoBack()">← ยกเลิก</button>
+      <button type="button" class="btn-save-top" onclick="document.getElementById('editPropertyForm').requestSubmit()">💾 บันทึกการแก้ไข</button>
+    </div>
+  </div>
+
+  <!-- ── Main form ── -->
+  <form id="editPropertyForm" onsubmit="saveProperty(event)" class="edit-form">
+
+    <!-- ══ ROW 1: ซ้าย = ข้อมูลทั่วไป + ที่ตั้ง | ขวา = ราคา + รายละเอียด ══ -->
+    <div class="col-left">
+
+      <div class="card-section" id="section-general">
+        <div class="section-label">🏠 ข้อมูลทั่วไป</div>
+        <div class="field-group">
+          <label for="propName">ชื่อที่พักอาศัย <span class="req">*</span></label>
+          <input type="text" id="propName" placeholder="เช่น หอพัก ลีลาวดี" required>
+        </div>
+        <div class="field-group">
+          <label for="propType">ประเภท <span class="req">*</span></label>
+          <select id="propType" required>
+            <option value="">-- เลือกประเภท --</option>
+            <option value="room">ห้องเช่า</option>
+            <option value="house">บ้านเช่า</option>
+            <option value="apartment">อพาร์ตเมนต์</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card-section card-stretch" id="section-location">
+        <div class="section-label">📍 ที่ตั้ง</div>
+        <div class="field-group">
+          <label>พิกัดบนแผนที่</label>
+          <div class="btn-map" onclick="openPinMapModal()">📍 คลิกเพื่อแก้ไขพิกัด</div>
+          <div id="pinStatus" class="pin-status" style="display:none;">✅ ปักหมุดตำแหน่งแล้ว!</div>
+          <input type="hidden" id="mapPinX" value="">
+          <input type="hidden" id="mapPinY" value="">
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label for="locProvince">จังหวัด</label>
+            <select id="locProvince" onchange="onProvinceChange()">
+              <option value="">-- เลือกจังหวัด --</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="locAmphur">อำเภอ / เขต</label>
+            <select id="locAmphur" onchange="onAmphurChange()" disabled>
+              <option value="">-- เลือกจังหวัดก่อน --</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="locTambon">ตำบล / แขวง</label>
+            <select id="locTambon" disabled>
+              <option value="">-- เลือกอำเภอก่อน --</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="locAddress">ถนน / ซอย / เลขที่</label>
+          <textarea id="locAddress" placeholder="เช่น 123/4 ถ.พหลโยธิน" class="address-textarea"></textarea>
+        </div>
+      </div>
+
+    </div><!-- /col-left row1 -->
+
+    <div class="col-right">
+
+      <div class="card-section" id="section-price">
+        <div class="section-label">💰 ราคาค่าเช่า (บาท)</div>
+        <div class="field-row">
+          <div class="field-group">
+            <label for="priceDaily">รายวัน</label>
+            <input type="number" id="priceDaily" min="0" placeholder="0">
+          </div>
+          <div class="field-group">
+            <label for="priceMonthly">รายเดือน</label>
+            <input type="number" id="priceMonthly" min="0" placeholder="0">
+          </div>
+          <div class="field-group">
+            <label for="priceYearly">รายปี</label>
+            <input type="number" id="priceYearly" min="0" placeholder="0">
+          </div>
+          <div class="field-group">
+            <label for="priceTerm">รายเทอม</label>
+            <input type="number" id="priceTerm" min="0" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="card-section" id="section-contact">
+        <div class="section-label">📐 รายละเอียดห้อง</div>
+        <div class="field-row">
+          <div class="field-group">
+            <label for="bedRooms">ห้องนอน</label>
+            <input type="number" id="bedRooms" min="0" placeholder="0">
+          </div>
+          <div class="field-group">
+            <label for="bathRooms">ห้องน้ำ</label>
+            <input type="number" id="bathRooms" min="0" placeholder="0">
+          </div>
+          <div class="field-group">
+            <label for="areaSqm">พื้นที่ (ตร.ม.)</label>
+            <input type="number" id="areaSqm" min="0" placeholder="0">
+          </div>
+          <div class="field-group">
+            <label for="bedCount">จำนวนเตียง</label>
+            <input type="number" id="bedCount" min="0" placeholder="1">
+          </div>
+          <div class="field-group">
+            <label for="bedSize">ขนาดเตียง (ฟุต)</label>
+            <input type="number" step="0.5" id="bedSize" min="0" placeholder="5">
+          </div>
+        </div>
+      </div>
+
+      <!-- รูปภาพ (อยู่ขวาแถวแรก ใต้ราคา+รายละเอียด) -->
+      <div class="card-section card-stretch" id="section-images">
+        <div class="section-label">📸 รูปภาพที่พัก</div>
+        <label for="imgUpload" class="upload-box">
+          <div class="upload-icon">📸</div>
+          <div>คลิกเพื่อเพิ่มรูปภาพ (เลือกหลายรูปได้)</div>
+        </label>
+        <input type="file" id="imgUpload" accept="image/*" multiple style="display:none;">
+        <div class="preview-grid" id="imagePreviewGrid"></div>
+      </div>
+
+    </div><!-- /col-right row1 -->
+
+    <!-- ══ ROW 2: สิ่งอำนวยความสะดวก ซ้าย = ในห้อง | ขวา = อาคาร ══ -->
+    <div class="card-section col-span-2-left" id="section-room-amenities">
+      <div class="section-label">🛏️ สิ่งอำนวยความสะดวกในห้องพัก</div>
+      <div class="checkbox-grid" id="roomAmenitiesGrid">
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="เครื่องปรับอากาศ"> เครื่องปรับอากาศ</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="พัดลม"> พัดลม</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="เครื่องทำน้ำอุ่น"> เครื่องทำน้ำอุ่น</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="เคเบิลทีวี/ดาวเทียม"> เคเบิลทีวี/ดาวเทียม</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="ตู้เย็น"> ตู้เย็น</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="อินเทอร์เน็ตในห้อง (Wi-Fi)"> Wi-Fi ในห้อง</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="โซฟา"> โซฟา</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="โต๊ะทำงาน"> โต๊ะทำงาน</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="เตาปรุงอาหาร"> เตาปรุงอาหาร</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="สัตว์เลี้ยง"> เลี้ยงสัตว์ได้</label>
+        <label class="checkbox-item"><input type="checkbox" class="room-amenity" value="สูบบุหรี่"> สูบบุหรี่ได้</label>
+      </div>
+    </div>
+
+    <div class="card-section col-span-2-right" id="section-building-amenities">
+      <div class="section-label">🏢 สิ่งอำนวยความสะดวกส่วนกลาง / อาคาร</div>
+      <div class="checkbox-grid" id="bldgAmenitiesGrid">
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="คีย์การ์ด"> คีย์การ์ด</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="ลายนิ้วมือ"> ลายนิ้วมือ</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="รปภ"> ยาม รปภ.</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="CCTV"> กล้อง CCTV</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="ที่จอดมอเตอร์ไซค์"> จอดมอเตอร์ไซค์</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="ที่จอดรถยนต์"> จอดรถยนต์</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="สระว่ายน้ำ"> สระว่ายน้ำ</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="ฟิตเนส"> ฟิตเนส</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="ร้านซักรีด"> ร้านซักรีด</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="ลิฟต์"> ลิฟต์</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="ร้านค้า"> ร้านค้า</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="ร้านอาหาร"> ร้านอาหาร</label>
+        <label class="checkbox-item"><input type="checkbox" class="bldg-amenity" value="EV Charger"> EV Charger</label>
+      </div>
+    </div>
+
+  </form><!-- /edit-form -->
+
+</div><!-- /page-wrapper -->
+
+<!-- ════ MAP MODAL ════ -->
+<div id="mapModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:white; width:92%; max-width:860px; border-radius:14px; padding:24px; box-shadow:0 12px 40px rgba(0,0,0,0.18); border:1px solid #dcd3c6; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="margin:0; font-family:'Prompt',sans-serif; font-size:17px; font-weight:600; color:#4a3f35;">📍 แก้ไขตำแหน่งที่พัก</h3>
+      <span onclick="closePinMapModal()" style="font-size:24px; cursor:pointer; color:#aaa; line-height:1;">&times;</span>
+    </div>
+    <div style="position:relative; margin-bottom:10px;">
+      <input type="text" id="mapSearchInput" placeholder="🔍 พิมพ์เพื่อค้นหาจังหวัด อำเภอ หรือสถานที่..."
+        style="width:100%; padding:10px 14px; border:1px solid #dcd3c6; border-radius:8px; font-family:'Prompt',sans-serif; font-size:14px; box-sizing:border-box;"
+        oninput="onMapSearchInput(this.value)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault(); onMapSearchInput(this.value);}">
+      <div id="mapSearchResults" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0;
+        background:white; border:1px solid #dcd3c6; border-radius:8px; max-height:200px; overflow-y:auto;
+        box-shadow:0 6px 20px rgba(0,0,0,0.12); z-index:10000;"></div>
+    </div>
+
+    <!-- Cascade dropdown จังหวัด/อำเภอ/ตำบล -->
+    <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+      <select id="modalProvince" onchange="onModalProvinceChange()"
+        style="flex:1; min-width:120px; padding:8px 10px; border:1px solid #dcd3c6; border-radius:8px; font-family:'Prompt',sans-serif; font-size:13px;">
+        <option value="">🗺️ เลือกจังหวัด</option>
+      </select>
+      <select id="modalAmphur" onchange="onModalAmphurChange()" disabled
+        style="flex:1; min-width:120px; padding:8px 10px; border:1px solid #dcd3c6; border-radius:8px; font-family:'Prompt',sans-serif; font-size:13px;">
+        <option value="">อำเภอ / เขต</option>
+      </select>
+      <select id="modalTambon" onchange="onModalTambonChange()" disabled
+        style="flex:1; min-width:120px; padding:8px 10px; border:1px solid #dcd3c6; border-radius:8px; font-family:'Prompt',sans-serif; font-size:13px;">
+        <option value="">ตำบล / แขวง</option>
+      </select>
+    </div>
+    <div id="leafletMapEdit" style="height:380px; border-radius:10px; border:1px solid #dcd3c6; overflow:hidden;"></div>
+    <p style="font-size:12px; color:#888; margin:8px 0 0;">💡 คลิกบนแผนที่หรือลากหมุดเพื่อเปลี่ยนตำแหน่ง</p>
+    <button onclick="savePinAndClose()" style="margin-top:12px; padding:11px; width:100%; background:#8b7355; color:white; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; font-family:'Prompt',sans-serif;">✅ ยืนยันตำแหน่งนี้</button>
+  </div>
+</div>
+
+<!-- ════ CUSTOM POPUP ════ -->
+<div class="custom-popup-overlay" id="customPopup">
+  <div class="custom-popup-box">
+    <div class="custom-popup-icon" id="popupIcon">ℹ️</div>
+    <h3 class="custom-popup-title" id="popupTitle">แจ้งเตือน</h3>
+    <p class="custom-popup-message" id="popupMessage">รายละเอียด</p>
+    <div class="custom-popup-buttons" id="popupButtons"></div>
+  </div>
+</div>
+
+<script src="js/map-utils.js"></script>
+<script src="js/edit-property.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

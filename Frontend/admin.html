@@ -1,0 +1,441 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Icon.svg">
+<title>Admin Dashboard - OakStay</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/responsive.css">
+<style>
+/* ── Mobile hamburger menu — inline style ชนะ Bootstrap และ responsive.css ── */
+@media (max-width: 992px) {
+    body.admin-page               { flex-direction: column !important; height: auto !important; min-height: 100vh !important; overflow-x: hidden !important; overflow-y: auto !important; }
+    body.admin-page .sidebar      { width: 100% !important; height: auto !important; flex-direction: column !important; position: sticky !important; top: 0 !important; z-index: 300 !important; }
+    body.admin-page .sidebar-header { justify-content: space-between !important; padding: 13px 16px !important; }
+    body.admin-page .sidebar-toggle { display: flex !important; }
+    body.admin-page .sidebar-footer { display: none !important; }
+    body.admin-page .main-content { flex: none !important; width: 100% !important; padding: 16px !important; overflow: visible !important; height: auto !important; min-height: auto !important; }
+    body.admin-page .tab-content  { flex: none !important; min-height: auto !important; }
+    body.admin-page .table-wrapper { overflow-x: auto !important; overflow-y: visible !important; flex-shrink: 0 !important; }
+
+    /* ── ซ่อนเมนู default ── */
+    body.admin-page #adminMenuList            { display: none !important; }
+    /* ── เปิดเมนูเมื่อมี class .open ── */
+    body.admin-page #adminMenuList.open       { display: flex !important; flex-direction: column !important; }
+    body.admin-page #adminMenuList .menu-item { display: block !important; width: 100% !important; padding: 15px 20px !important; border-bottom: 1px solid #364759 !important; border-left: none !important; font-size: 15px !important; box-sizing: border-box !important; }
+    body.admin-page #adminMenuList .menu-item.active { border-left: 5px solid #63b3ed !important; }
+    /* sidebar-footer ซ่อนใน mobile เมื่อเมนูปิด แสดงเมื่อเมนูเปิด */
+    body.admin-page .sidebar-footer           { display: none !important; }
+    body.admin-page #adminMenuList.open ~ .sidebar-footer { display: flex !important; flex-direction: column !important; flex-shrink: 0 !important; }
+}
+</style>
+</head>
+<body class="admin-page">
+
+<div class="custom-popup-overlay" id="customPopup">
+    <div class="custom-popup-box">
+        <div class="custom-popup-icon" id="popupIcon">ℹ️</div>
+        <h3 class="custom-popup-title" id="popupTitle">แจ้งเตือน</h3>
+        <p class="custom-popup-message" id="popupMessage">รายละเอียดข้อความ</p>
+        <div class="custom-popup-buttons" id="popupButtons"></div>
+    </div>
+</div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span>🛡️ Admin Panel</span>
+            <!-- Hamburger — แสดงเฉพาะ mobile/tablet -->
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="เปิด/ปิดเมนู"
+                onclick="toggleAdminMenu()" style="background:none;border:none;padding:4px;">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <ul class="menu-list" id="adminMenuList">
+            <li class="menu-item active" onclick="switchTab('tab-reports', this)">🚨 รายงานปัญหา (Reports)</li>
+            <li class="menu-item" onclick="switchTab('tab-properties', this)">🏠 จัดการที่พัก (Properties)</li>
+            <li class="menu-item" onclick="switchTab('tab-users', this)">👥 จัดการสมาชิก (Users)</li>
+            <li class="menu-item" onclick="switchTab('tab-appeals', this)">📋 คำร้องโต้แย้ง <span id="appealBadge" style="display:none;background:#e53e3e;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;">0</span></li>
+        </ul>
+        <!-- footer: ไปหน้าหลัก + ออกจากระบบ — อยู่ล่างสุดทั้ง desktop และ mobile (เมื่อเปิดเมนู) -->
+        <div class="sidebar-footer">
+            <a href="index.html" style="display:block;padding:15px 20px;background:#3b4e63;color:white;text-align:center;font-weight:bold;text-decoration:none;border-top:1px solid #364759;transition:0.2s;"
+               onmouseover="this.style.background='#4a6080'" onmouseout="this.style.background='#3b4e63'">
+                🏠 ไปหน้าหลัก
+            </a>
+            <div class="logout-btn" onclick="adminLogout()">ออกจากระบบ</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="tab-reports" class="tab-content">
+            <h2 class="page-title">🚨 สรุปรายงานปัญหา (จัดกลุ่มตามที่พัก)</h2>
+            <div class="admin-filter-bar">
+                <input type="text" id="reportSearch" placeholder="🔍 ค้นหาชื่อที่พัก หรืออีเมลเจ้าของ..."
+                    oninput="filterReports()" class="admin-filter-input">
+                <select id="reportStatusFilter" onchange="filterReports()" class="admin-filter-select">
+                    <option value="">ทุกสถานะ</option>
+                    <option value="pending">⏳ มีรายงานค้างอยู่</option>
+                    <option value="clear">✅ ดำเนินการแล้ว</option>
+                </select>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table" id="table-reports">
+                    <thead><tr>
+                        <th style="width:44%">ที่พัก / เจ้าของ</th>
+                        <th style="width:22%">จำนวนรายงาน</th>
+                        <th>การจัดการ</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="pagination-bar" id="pagination-reports"></div>
+        </div>
+
+        <div id="tab-properties" class="tab-content" style="display: none;">
+            <h2 class="page-title">🏠 จัดการข้อมูลที่พักทั้งหมด</h2>
+            <div class="admin-filter-bar">
+                <input type="text" id="propSearch" placeholder="🔍 ค้นหาชื่อที่พัก หรืออีเมลเจ้าของ..."
+                    oninput="filterProperties()" class="admin-filter-input">
+                <select id="propTypeFilter" onchange="filterProperties()" class="admin-filter-select">
+                    <option value="">ทุกประเภท</option>
+                    <option value="DORMITORY">หอพัก</option>
+                    <option value="APARTMENT">อพาร์ตเมนต์</option>
+                    <option value="HOUSE">บ้านเช่า</option>
+                    <option value="CONDO">คอนโด</option>
+                </select>
+                <select id="propStatusFilter" onchange="filterProperties()" class="admin-filter-select">
+                    <option value="">ทุกสถานะ</option>
+                    <option value="1">✅ เผยแพร่</option>
+                    <option value="0">🔒 ซ่อนไว้</option>
+                </select>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table" id="table-properties">
+                    <thead><tr>
+                        <th style="width:50px">ID</th>
+                        <th>ชื่อที่พัก / เจ้าของ</th>
+                        <th style="width:120px">ประเภท</th>
+                        <th>สถานะ &amp; การจัดการ</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="pagination-bar" id="pagination-properties"></div>
+        </div>
+
+        <div id="tab-users" class="tab-content" style="display: none;">
+            <h2 class="page-title">👥 จัดการสมาชิกในระบบ</h2>
+            <div class="admin-filter-bar">
+                <input type="text" id="userSearch" placeholder="🔍 ค้นหาชื่อ หรืออีเมลสมาชิก..."
+                    oninput="filterUsers()" class="admin-filter-input">
+                <select id="userRoleFilter" onchange="filterUsers()" class="admin-filter-select">
+                    <option value="">ทุกบทบาท</option>
+                    <option value="USER">👤 USER</option>
+                    <option value="OWNER">🏠 OWNER</option>
+                    <option value="ADMIN">🛡️ ADMIN</option>
+                </select>
+                <select id="userStatusFilter" onchange="filterUsers()" class="admin-filter-select">
+                    <option value="">ทุกสถานะ</option>
+                    <option value="ACTIVE">✔ ปกติ</option>
+                    <option value="BANNED">🚫 ถูกระงับ</option>
+                </select>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table" id="table-users">
+                    <thead><tr>
+                        <th style="width:38%">ชื่อ-นามสกุล / อีเมล</th>
+                        <th style="width:22%">บทบาท &amp; สถานะ</th>
+                        <th>การจัดการ</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="pagination-bar" id="pagination-users"></div>
+        </div>
+
+        <div id="tab-appeals" class="tab-content" style="display: none;">
+            <h2 class="page-title">📋 คำร้องโต้แย้งการระงับบัญชี</h2>
+            <div class="admin-filter-bar">
+                <input type="text" id="appealSearch" placeholder="🔍 ค้นหาชื่อ หรืออีเมลผู้ยื่นคำร้อง..."
+                    oninput="filterAppeals()" class="admin-filter-input">
+                <select id="appealStatusFilter" onchange="filterAppeals()" class="admin-filter-select">
+                    <option value="">ทุกสถานะ</option>
+                    <option value="PENDING">⏳ รอตรวจสอบ</option>
+                    <option value="APPROVED">✅ อนุมัติแล้ว</option>
+                    <option value="REJECTED">❌ ปฏิเสธแล้ว</option>
+                </select>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table" id="table-appeals">
+                    <thead><tr>
+                        <th style="width:36%">ผู้ยื่นคำร้อง / อีเมล</th>
+                        <th>เหตุผลที่ถูกระงับ</th>
+                        <th style="width:140px">วันที่ยื่น</th>
+                        <th style="width:200px">สถานะ &amp; การจัดการ</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="pagination-bar" id="pagination-appeals"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="warningModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📤 ส่งแจ้งเตือนไปยังเจ้าของหอพัก</h2>
+                <span class="close-modal-btn" onclick="document.getElementById('warningModal').style.display='none'">&times;</span>
+            </div>
+            
+            <input type="hidden" id="warnOwnerEmail">
+            <input type="hidden" id="warnPropName">
+            <input type="hidden" id="warnPropId">
+
+            <!-- ข้อมูลที่พักและเจ้าของ -->
+            <div style="background:#faf8f5; border:1px solid #ece8e1; border-radius:8px; padding:12px 16px; margin-bottom:14px; font-size:14px;">
+                <div style="margin-bottom:4px;">🏠 <strong>ที่พัก:</strong> <span id="warnPropNameDisplay" style="color:#4a3f35;"></span></div>
+                <div>👤 <strong>เจ้าของ:</strong> <span id="warnOwnerDisplay" style="color:#4a3f35;"></span></div>
+            </div>
+            
+            <div class="form-group">
+                <label style="font-weight:600; color:#333; margin-bottom:8px; display:block;">📌 สาเหตุที่ผู้ใช้งานรายงานเข้ามา:</label>
+                <ul id="warnReasonsList" style="padding:0; margin:0;"></ul>
+            </div>
+
+            <div class="form-group">
+                <label style="font-weight:600; color:#333; margin-bottom:6px; display:block;">
+                    💬 ข้อความแจ้งเตือน
+                    <span style="font-weight:400; font-size:12px; color:#888;">(ระบบจะส่งเข้าแชทของเจ้าของหอพักโดยอัตโนมัติ)</span>
+                </label>
+                <textarea id="warnMessage" rows="5" style="width:100%; padding:10px; border:1px solid #dcd3c6; border-radius:8px; font-family:inherit; font-size:13px; box-sizing:border-box; resize:vertical; line-height:1.6;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label style="font-weight:600; color:#333; margin-bottom:6px; display:block;">⚖️ มาตรการเพิ่มเติม:</label>
+                <select id="warnAction" onchange="toggleDeadlineInput()" style="width:100%; padding:9px; border:1px solid #dcd3c6; border-radius:8px; font-family:inherit; font-size:14px;">
+                    <option value="none">ส่งข้อความเตือนอย่างเดียว (ไม่ระงับบัญชี)</option>
+                    <option value="auto_days">⏰ ให้เวลาแก้ไข แล้วระงับอัตโนมัติตามจำนวนวัน</option>
+                    <option value="suspend_now">🚫 ระงับบัญชีทันที (แบนด่วน)</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="deadlineDaysGroup" style="display:none; background:#fff8e1; border:1px solid #ffe082; border-radius:8px; padding:12px 16px;">
+                <label style="font-weight:600; color:#7b5c00; margin-bottom:8px; display:block;">⏰ ให้เวลาแก้ไขกี่วัน ก่อนโดนระงับบัญชี?</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="number" id="deadlineDays" value="3" min="1" max="30"
+                        style="width:90px; padding:8px; border:1px solid #ffc107; border-radius:8px; font-size:15px; font-family:inherit; text-align:center;">
+                    <span style="color:#7b5c00; font-size:13px;">วัน (ระบบแจ้งวันหมดเขตในข้อความอัตโนมัติ)</span>
+                </div>
+            </div>
+
+            <button class="btn-submit-warn" onclick="confirmWarning()" style="width:100%; margin-top:6px;">
+                📤 ยืนยันส่งแจ้งเตือน
+            </button>
+        </div>
+    </div>
+
+<!-- Modal: ดูรายงานละเอียด -->
+<div class="modal-overlay" id="reportDetailModal">
+    <div class="modal-content modal-wide" style="max-width:700px;padding:0;overflow:hidden;">
+        <div class="modal-header" style="padding:16px 20px;background:#f8f6f3;border-bottom:1px solid #e8e4df;margin-bottom:0;">
+            <div>
+                <h2 class="modal-title" style="margin-bottom:2px;">📋 รายงานที่พัก: <span id="rdPropTitle"></span></h2>
+                <div style="font-size:12px;color:#aaa;font-weight:400;">รายการรายงานทั้งหมดของที่พักนี้</div>
+            </div>
+            <span class="close-modal-btn" onclick="closeModal('reportDetailModal')">&times;</span>
+        </div>
+        <div id="report-detail-list" style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;max-height:65vh;overflow-y:auto;background:#faf8f5;"></div>
+    </div>
+</div>
+<div class="modal-overlay" id="propertyDetailModal">
+    <div class="modal-content modal-wide">
+        <div class="modal-header">
+            <h2 class="modal-title" id="pdTitle">รายละเอียดที่พัก</h2>
+            <span class="close-modal-btn" onclick="closeModal('propertyDetailModal')">&times;</span>
+        </div>
+        <div class="info-section">
+            <div><span>เจ้าของ:</span> <span id="pdOwner"></span></div>
+            <div style="margin-top:6px;"><span>จังหวัด:</span> <span id="pdProvince"></span>
+            &nbsp;|&nbsp;<span>ราคา/เดือน:</span> <span id="pdPrice"></span></div>
+        </div>
+
+        <!-- แก้ไขชื่อ + สถานะ -->
+        <div class="form-row-2" style="margin-bottom:15px;">
+            <div class="form-group">
+                <label style="font-weight:bold;font-size:13px;margin-bottom:4px;display:block;">ชื่อที่พัก</label>
+                <input type="text" id="pdEditTitle">
+            </div>
+            <div class="form-group">
+                <label style="font-weight:bold;font-size:13px;margin-bottom:4px;display:block;">สถานะ</label>
+                <select id="pdEditPublish">
+                    <option value="1">เผยแพร่</option>
+                    <option value="0">ซ่อนไว้</option>
+                </select>
+            </div>
+        </div>
+        <button onclick="savePropertyAdmin()" style="background:#2b7bb9;color:white;border:none;padding:9px 20px;border-radius:6px;cursor:pointer;font-weight:bold;margin-bottom:20px;">💾 บันทึกการแก้ไข</button>
+
+        <!-- รูปภาพ -->
+        <div style="font-weight:bold;font-size:15px;margin-bottom:6px;">📸 รูปภาพที่พัก (คลิก ✕ เพื่อลบรูป)</div>
+        <div class="img-grid" id="pdImageGrid"></div>
+    </div>
+</div>
+
+<!-- Modal: เรียกดูข้อมูลสมาชิก -->
+<div class="modal-overlay" id="userDetailModal">
+    <div class="modal-content" style="max-width:560px;">
+        <div class="modal-header">
+            <h2 class="modal-title">👤 ข้อมูลสมาชิก</h2>
+            <span class="close-modal-btn" onclick="closeModal('userDetailModal')">&times;</span>
+        </div>
+        <div id="udBody" style="padding:4px 0;"></div>
+    </div>
+</div>
+
+<!-- Modal: แก้ไขข้อมูล user -->
+<div class="modal-overlay" id="editUserModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">✏️ แก้ไขข้อมูลสมาชิก</h2>
+            <span class="close-modal-btn" onclick="closeModal('editUserModal')">&times;</span>
+        </div>
+        <input type="hidden" id="euEmail">
+        <div class="info-section"><span>อีเมล:</span> <span id="euEmailDisplay"></span></div>
+        <div class="form-row-2">
+            <div class="form-group">
+                <label style="font-weight:bold;font-size:13px;margin-bottom:4px;display:block;">ชื่อ</label>
+                <input type="text" id="euFirstName" placeholder="ชื่อ">
+            </div>
+            <div class="form-group">
+                <label style="font-weight:bold;font-size:13px;margin-bottom:4px;display:block;">นามสกุล</label>
+                <input type="text" id="euLastName" placeholder="นามสกุล">
+            </div>
+        </div>
+        <div class="form-row-2" style="margin-top:10px;">
+            <div class="form-group">
+                <label style="font-weight:bold;font-size:13px;margin-bottom:4px;display:block;">เบอร์โทร</label>
+                <input type="text" id="euPhone" placeholder="เบอร์โทรศัพท์">
+            </div>
+            <div class="form-group">
+                <label style="font-weight:bold;font-size:13px;margin-bottom:4px;display:block;">บทบาท</label>
+                <select id="euRole">
+                    <option value="USER">USER</option>
+                    <option value="OWNER">OWNER</option>
+                </select>
+            </div>
+        </div>
+        <button onclick="saveUserAdmin()" style="background:#2b7bb9;color:white;border:none;padding:10px;border-radius:6px;cursor:pointer;font-weight:bold;width:100%;margin-top:15px;">💾 บันทึก</button>
+    </div>
+</div>
+
+    <!-- ── Ban Reason Modal ── -->
+    <div class="modal-overlay" id="banReasonModal" style="display:none;">
+        <div class="modal-content" style="max-width:520px;">
+            <div class="modal-header">
+                <h2 class="modal-title">🚫 ระงับบัญชีผู้ใช้</h2>
+                <span class="close-modal-btn" onclick="document.getElementById('banReasonModal').style.display='none'">&times;</span>
+            </div>
+
+            <!-- ข้อมูลสมาชิก -->
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+                <div style="font-weight:700;font-size:15px;color:#991b1b;margin-bottom:4px;" id="banModalUserName"></div>
+                <div style="font-size:13px;color:#888;" id="banModalUserEmail"></div>
+            </div>
+
+            <input type="hidden" id="banModalEmail">
+
+            <!-- เหตุผลการระงับ -->
+            <div class="form-group">
+                <label style="font-weight:600;color:#333;margin-bottom:8px;display:block;">📌 เหตุผลการระงับ <span style="color:red">*</span></label>
+                <select id="banReasonSelect" style="width:100%;padding:10px;border:1px solid #dcd3c6;border-radius:8px;font-family:inherit;font-size:14px;">
+                    <option value="">— เลือกเหตุผล —</option>
+                    <option value="พฤติกรรมไม่เหมาะสม / เนื้อหาลามก">🔞 พฤติกรรมไม่เหมาะสม / เนื้อหาลามก</option>
+                    <option value="ข้อมูลเท็จ / หลอกลวง">🚨 ข้อมูลเท็จ / หลอกลวง</option>
+                    <option value="สแปม / โฆษณาเกินจริง">📢 สแปม / โฆษณาเกินจริง</option>
+                    <option value="ที่พักไม่มีอยู่จริง">🏠 ที่พักไม่มีอยู่จริง</option>
+                    <option value="อื่นๆ">💬 อื่นๆ</option>
+                </select>
+            </div>
+
+            <!-- รายละเอียดเพิ่มเติม -->
+            <div class="form-group">
+                <label style="font-weight:600;color:#333;margin-bottom:6px;display:block;">
+                    📝 รายละเอียดเพิ่มเติม
+                    <span style="font-weight:400;font-size:12px;color:#888;">(จะแสดงให้ผู้ใช้เห็นตอนพยายามเข้าสู่ระบบ)</span>
+                </label>
+                <textarea id="banReasonDetail" rows="4" placeholder="ระบุรายละเอียดเหตุผลในการระงับบัญชี..."
+                    style="width:100%;padding:10px;border:1px solid #dcd3c6;border-radius:8px;font-family:inherit;font-size:13px;box-sizing:border-box;resize:vertical;line-height:1.6;"></textarea>
+            </div>
+
+            <!-- ปุ่ม -->
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button class="prop-btn" style="background:#f3f4f6;color:#374151;padding:10px 22px;font-size:14px;"
+                    onclick="document.getElementById('banReasonModal').style.display='none'">ยกเลิก</button>
+                <button id="banConfirmBtn" class="prop-btn" style="background:#dc3545;color:#fff;padding:10px 22px;font-size:14px;font-weight:700;"
+                    onclick="confirmBanUser()">🚫 ยืนยันระงับบัญชี</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Appeal Detail Modal ── -->
+    <div class="modal-overlay" id="appealDetailModal" style="display:none;">
+        <div class="modal-content" style="max-width:600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 รายละเอียดคำร้องโต้แย้ง</h2>
+                <span class="close-modal-btn" onclick="document.getElementById('appealDetailModal').style.display='none'">&times;</span>
+            </div>
+            <div id="appealDetailBody"></div>
+        </div>
+    </div>
+
+<script src="js/admin.js?v=9"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ── Role Change Modal ── -->
+    <div class="modal-overlay" id="roleChangeModal" style="display:none;">
+        <div class="modal-content" style="max-width:480px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="roleModalTitle">🛡️ เปลี่ยนสิทธิ์สมาชิก</h2>
+                <span class="close-modal-btn" onclick="document.getElementById('roleChangeModal').style.display='none'">&times;</span>
+            </div>
+
+            <!-- ข้อมูลสมาชิก -->
+            <div style="background:#faf8f5;border:1px solid #ece8e1;border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+                <div style="font-weight:700;font-size:15px;color:#2d2016;margin-bottom:4px;" id="roleModalUserName"></div>
+                <div style="font-size:13px;color:#888;" id="roleModalUserEmail"></div>
+            </div>
+
+            <!-- Before → After -->
+            <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;">
+                <div style="text-align:center;">
+                    <div style="font-size:11px;color:#888;margin-bottom:6px;font-weight:600;">สิทธิ์ปัจจุบัน</div>
+                    <div id="roleModalCurrentBadge"></div>
+                </div>
+                <div style="font-size:22px;color:#bbb;">→</div>
+                <div style="text-align:center;">
+                    <div style="font-size:11px;color:#888;margin-bottom:6px;font-weight:600;">สิทธิ์ใหม่</div>
+                    <div id="roleModalNewBadge"></div>
+                </div>
+            </div>
+
+            <!-- คำอธิบาย -->
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:13px;color:#78350f;line-height:1.5;">
+                ⚠️ <span id="roleModalDesc"></span>
+            </div>
+
+            <!-- ปุ่ม -->
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button class="prop-btn" style="background:#f3f4f6;color:#374151;padding:9px 20px;font-size:14px;"
+                    onclick="document.getElementById('roleChangeModal').style.display='none'">ยกเลิก</button>
+                <button id="roleModalConfirmBtn" class="prop-btn" style="padding:9px 20px;font-size:14px;color:#fff;"
+                    onclick="confirmRoleChange()">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+

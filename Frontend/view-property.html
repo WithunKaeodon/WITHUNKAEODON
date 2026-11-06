@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Icon.svg">
+<title>รายละเอียดที่พัก - OakStay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/view-property.css">
+
+<link rel="stylesheet" href="css/index.css">
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div id="shared-header"></div>
+<script src="js/shared-header.js"></script>
+
+<!-- Main Layout: 2 คอลัมน์ -->
+<div class="page-layout" id="detailContainer">
+
+    <!-- คอลัมน์ซ้าย: รูปภาพ + แผนที่ -->
+    <div class="col-left">
+
+        <!-- Toggle buttons -->
+        <div class="view-toggle">
+            <button class="toggle-btn active" id="btnShowPhotos" onclick="switchView('photos')">📸 รูปภาพ</button>
+            <button class="toggle-btn" id="btnShowMap" onclick="switchView('map')">📍 แผนที่</button>
+        </div>
+
+        <!-- รูปภาพ -->
+        <div id="viewPhotos">
+            <div class="carousel">
+                <!-- ปุ่มซ้าย -->
+                <button class="carousel-btn carousel-prev" onclick="carouselMove(-1)">&#8249;</button>
+                <!-- รูปหลัก -->
+                <img id="mainImg" src="https://placehold.co/700x440/e6f0ff/2b7bb9?text=Loading..." alt="" class="main-img" onclick="carouselMove(1)">
+                <!-- ปุ่มขวา -->
+                <button class="carousel-btn carousel-next" onclick="carouselMove(1)">&#8250;</button>
+                <!-- Dots -->
+                <div class="carousel-dots" id="carouselDots"></div>
+                <!-- Counter -->
+                <div class="carousel-counter" id="carouselCounter"></div>
+            </div>
+        </div>
+
+        <!-- แผนที่ -->
+        <div id="viewMap" style="display:none; flex-direction:column; min-height:0;">
+            <div id="viewAddressText" style="font-size:13px; color:#666; margin-bottom:8px; padding:0 2px;"></div>
+            <div id="leafletMapView" style="flex:1; border-radius:10px; border:1px solid #dcd3c6; overflow:hidden; min-height:300px;"></div>
+        </div>
+
+    </div>
+
+    <!-- คอลัมน์ขวา: ข้อมูล scroll -->
+    <div class="col-right">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:6px;">
+            <h1 id="viewName" style="margin:0; flex:1;">กำลังโหลด...</h1>
+            <!-- ปุ่มแก้ไข — แสดงเฉพาะเจ้าของ -->
+            <a id="editPropertyBtn" href="#"
+               style="display:none; align-items:center; gap:5px; flex-shrink:0;
+                      background:#f5f0e6; color:#8b7355; border:1px solid #dcd3c6;
+                      border-radius:8px; padding:6px 14px; font-size:13px; font-weight:600;
+                      text-decoration:none; font-family:'Prompt',sans-serif; transition:0.18s; white-space:nowrap;"
+               onmouseover="this.style.background='#ebe3d5';this.style.borderColor='#8b7355'"
+               onmouseout="this.style.background='#f5f0e6';this.style.borderColor='#dcd3c6'">
+               ✏️ แก้ไขประกาศ
+            </a>
+        </div>
+        <div id="viewTypeBadge" class="type-badge"></div>
+
+        <!-- สลับประกาศในกลุ่ม (pill tabs แนวนอน) — แสดงเฉพาะเมื่อมีกลุ่ม -->
+        <div id="ownerPostsSection" style="display:none; margin-bottom:12px;">
+            <div id="ownerPostsBar" class="group-pill-bar"></div>
+        </div>
+        <div class="price-block" id="priceBlock"></div>
+
+        <!-- รายละเอียด -->
+        <div class="section-title">📋 รายละเอียด</div>
+        <div class="info-grid">
+            <div class="info-item"><span>ประเภท:</span><span id="viewTypeTxt"></span></div>
+            <div class="info-item"><span>พื้นที่:</span><span id="viewArea"></span> ตร.ม.</div>
+            <div class="info-item"><span>จำนวนห้องนอน:</span><span id="viewRooms"></span></div>
+            <div class="info-item"><span>จำนวนห้องน้ำ:</span><span id="viewBeds"></span></div>
+            <div class="info-item"><span>จำนวนเตียง:</span><span id="viewBedCount"></span></div>
+            <div class="info-item"><span>ขนาดเตียง:</span><span id="viewBedSize"></span></div>
+            <div class="info-item"><span>จังหวัด:</span><span id="viewProvince"></span></div>
+            <div class="info-item"><span>อำเภอ/เขต:</span><span id="viewDistrict"></span></div>
+            <div class="info-item"><span>ตำบล/แขวง:</span><span id="viewSubdistrict"></span></div>
+            <div class="info-item" style="grid-column:1/-1;"><span>ที่อยู่:</span><span id="viewAddress"></span></div>
+        </div>
+
+        <!-- สิ่งอำนวยความสะดวก -->
+        <div class="section-title">🛏️ ภายในห้อง</div>
+        <div class="amenities-list" id="viewRoomAmenities"><span style="color:#aaa">ไม่ระบุ</span></div>
+
+        <div class="section-title">🏢 ในอาคาร</div>
+        <div class="amenities-list" id="viewBldgAmenities"><span style="color:#aaa">ไม่ระบุ</span></div>
+
+        <!-- เจ้าของ -->
+        <div class="section-title">👤 ผู้ลงประกาศ</div>
+        <div class="owner-profile" id="ownerProfileCard" onclick="openOwnerModal()"
+            style="cursor:pointer; transition:box-shadow 0.2s;"
+            onmouseover="this.style.boxShadow='0 4px 16px rgba(139,115,85,0.15)'"
+            onmouseout="this.style.boxShadow=''">
+            <img id="ownerPic" src="https://placehold.co/70?text=U" class="owner-img">
+            <div class="owner-info">
+                <div id="ownerName" style="font-weight:700; font-size:16px; color:#4a3f35;">-</div>
+                <div id="ownerPhone" style="font-size:14px; color:#666; margin-top:4px;">📞 -</div>
+            </div>
+            <div style="margin-left:auto; color:#aaa; font-size:18px;">›</div>
+        </div>
+
+        <!-- Modal ข้อมูลเจ้าของ -->
+        <div id="ownerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+            <div style="background:white; border-radius:16px; padding:28px 24px; max-width:400px; width:90%; box-shadow:0 10px 40px rgba(0,0,0,0.2); position:relative; font-family:'Prompt',sans-serif;">
+                <!-- ปุ่มปิด -->
+                <button onclick="closeOwnerModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:22px; color:#aaa; cursor:pointer;">✕</button>
+
+                <!-- รูป + ชื่อ -->
+                <div style="text-align:center; margin-bottom:20px;">
+                    <img id="modalOwnerPic" src="https://placehold.co/90?text=U"
+                        style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid #dcd3c6; margin-bottom:10px;">
+                    <div id="modalOwnerName" style="font-size:18px; font-weight:700; color:#4a3f35;"></div>
+                    <div id="modalOwnerEmail" style="font-size:13px; color:#888; margin-top:3px;"></div>
+                </div>
+
+                <!-- ข้อมูลติดต่อ -->
+                <div id="modalOwnerDetails" style="display:flex; flex-direction:column; gap:10px; border-top:1px solid #f0ece6; padding-top:16px;"></div>
+
+                <!-- ปุ่มแชท -->
+                <a id="modalChatBtn" href="#"
+                    style="display:flex; align-items:center; justify-content:center; gap:8px;
+                           background:#28a745; color:white; border-radius:10px; padding:12px;
+                           text-decoration:none; font-weight:600; font-size:15px; margin-top:18px;
+                           transition:0.2s;"
+                    onmouseover="this.style.background='#1e7e34'"
+                    onmouseout="this.style.background='#28a745'">
+                    💬 ทักแชทเจ้าของ
+                </a>
+            </div>
+        </div>
+        <!-- ปุ่มแชท -->
+        <a id="chatWithOwnerBtn" href="#"
+            style="display:flex; align-items:center; justify-content:center; gap:8px;
+                   background:#28a745; color:white; border-radius:10px; padding:13px;
+                   text-decoration:none; font-weight:600; font-size:15px; margin-top:12px;
+                   font-family:'Prompt',sans-serif; transition:0.2s;"
+            onmouseover="this.style.background='#1e7e34'"
+            onmouseout="this.style.background='#28a745'">
+            💬 ทักแชทเจ้าของ
+        </a>
+
+        <!-- ปุ่ม Favorite -->
+        <button id="favBtn"
+            style="display:none; align-items:center; justify-content:center; gap:8px;
+                   width:100%; background:#f5f0e6; color:#8b7355; border:1px solid #dcd3c6;
+                   border-radius:10px; padding:11px; font-weight:600; font-size:14px;
+                   margin-top:8px; font-family:'Prompt',sans-serif; cursor:pointer; transition:0.2s;"
+            onmouseover="this.style.opacity='0.85'"
+            onmouseout="this.style.opacity='1'">
+            🤍 บันทึก
+        </button>
+
+        <!-- ปุ่ม Report -->
+        <button id="reportBtn"
+            style="display:none; align-items:center; justify-content:center; gap:6px;
+                   width:100%; background:none; color:#aaa; border:1px solid #e8e8e8;
+                   border-radius:10px; padding:9px; font-size:13px; font-weight:500;
+                   margin-top:6px; font-family:'Prompt',sans-serif; cursor:pointer; transition:0.2s;"
+            onmouseover="this.style.color='#e74c3c';this.style.borderColor='#e74c3c'"
+            onmouseout="this.style.color='#aaa';this.style.borderColor='#e8e8e8'">
+            🚩 รายงานประกาศนี้
+        </button>
+
+        <!-- รีวิว -->
+        <div class="section-title">⭐ รีวิวจากผู้เช่า</div>
+        <div id="reviewSummary" style="display:none; align-items:center; gap:16px; background:#fdfaf6; border:1px solid #e8decb; border-radius:10px; padding:14px; margin-bottom:16px;">
+            <div style="text-align:center;">
+                <div id="avgScore" style="font-size:36px; font-weight:700; color:#8b7355; line-height:1;"></div>
+                <div id="starDisplay" style="font-size:18px; color:#f5a623; margin:3px 0;"></div>
+                <div id="reviewCount" style="font-size:12px; color:#888;"></div>
+            </div>
+        </div>
+        <div id="reviewList"><p style="color:#aaa; font-size:13px;">กำลังโหลด...</p></div>
+    </div>
+
+</div>
+
+<script src="js/map-utils.js"></script>
+<script src="js/view-property.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

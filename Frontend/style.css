@@ -1,0 +1,134 @@
+/* style.css */
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f5f5f5;
+}
+
+/* Header */
+.header {
+    background: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header input {
+    padding: 6px;
+    width: 250px;
+}
+
+/* ปุ่มส้ม */
+.btn-orange {
+    background-color: #ff7a00;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-orange:hover {
+    background-color: #e66d00;
+}
+
+/* ปุ่มตัวหนังสือ */
+.text-btn {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.text-btn:hover {
+    color: #ff7a00;
+}
+
+/* Content */
+.container {
+    padding: 20px;
+}
+
+#list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.card {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* ปุ่มทั่วไป */
+button {
+    margin-top: 10px;
+}
+.text-btn {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.text-btn:hover {
+    color: #ff7a00;
+}
+/* Header layout ใหม่ */
+.header {
+    background: #fff;
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Logo */
+.logo h2 {
+    margin: 0;
+}
+
+/* Search */
+.search-box {
+    display: flex;
+    gap: 10px;
+}
+
+.search-box input {
+    padding: 8px;
+    width: 250px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* Menu ขวา */
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.header {
+    background: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between; /* 🔥 สำคัญ */
+    align-items: center;
+}
+
+/* ซ้าย */
+.left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* ขวา */
+.right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}

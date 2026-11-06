@@ -1,0 +1,580 @@
+﻿/* ===========================================
+   ADMIN PANEL — admin.css
+   Base → Desktop → Responsive
+   =========================================== */
+
+/* ── Reset ── */
+html, body { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+
+/* ── Base body (Desktop: sidebar left + content right) ── */
+body {
+    font-family: 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #e4e9f0;
+    display: flex;
+    flex-direction: row;   /* sidebar | content แนวนอน */
+    height: 100vh;
+    overflow: hidden;      /* desktop: scroll อยู่ใน .main-content */
+}
+
+/* =========================================
+   SIDEBAR (Desktop)
+   ========================================= */
+.sidebar {
+    width: 260px;
+    background: #2b3a4a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 100vh;
+    position: relative;
+    z-index: 100;
+}
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1e2833;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 1px solid #1a222c;
+    flex-shrink: 0;
+}
+/* Hamburger — ซ่อนบน Desktop */
+.sidebar-toggle { display: none; }
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: block;       /* explicit — ป้องกัน browser default interference */
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.menu-item {
+    padding: 15px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #364759;
+    transition: background 0.2s;
+}
+.menu-item:hover  { background: #3b4e63; }
+.menu-item.active { background: #2b7bb9; font-weight: bold; border-left: 5px solid #63b3ed; }
+
+/* Desktop footer (ไปหน้าหลัก + logout) */
+.sidebar-footer { display: flex; flex-direction: column; flex-shrink: 0; }
+.logout-btn {
+    padding: 15px 20px;
+    background: #d93838;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+.logout-btn:hover { background: #c53030; }
+
+/* =========================================
+   MAIN CONTENT (Desktop)
+   ========================================= */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 30px;
+    min-height: 0;
+    overflow: hidden;    /* scroll อยู่ใน .table-wrapper */
+}
+.page-title {
+    margin-top: 0;
+    color: #2b3a4a;
+    font-size: 18px;
+    font-weight: 700;
+    border-bottom: 2px solid #e2ded8;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+}
+.tab-content { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.filter-bar  { flex-shrink: 0; display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
+
+/* =========================================
+   STANDARDIZED FILTER BAR
+   ========================================= */
+.admin-filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 12px 16px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    flex-shrink: 0;
+}
+.admin-filter-input {
+    flex: 2;
+    min-width: 220px;
+    padding: 9px 14px;
+    border: 1.5px solid #e2ded8;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.admin-filter-input::placeholder { color: #b0a89f; }
+.admin-filter-input:focus {
+    outline: none;
+    border-color: #8b7355;
+    box-shadow: 0 0 0 3px rgba(139,115,85,0.12);
+}
+.admin-filter-select {
+    flex: 1;
+    min-width: 130px;
+    padding: 9px 12px;
+    border: 1.5px solid #e2ded8;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    background: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.admin-filter-select:focus {
+    outline: none;
+    border-color: #8b7355;
+    box-shadow: 0 0 0 3px rgba(139,115,85,0.12);
+}
+.table-wrapper { overflow-y: auto; overflow-x: auto; flex-shrink: 1; min-height: 0; }
+
+/* =========================================
+   TABLE
+   ========================================= */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.data-table th,
+.data-table td   { padding: 10px 16px; text-align: left; border-bottom: 1px solid #f0ece8; vertical-align: middle; }
+.data-table th   { background: #f5f2ee; font-weight: 700; color: #4a3f35; padding: 12px 16px; font-size: 13px; letter-spacing: 0.02em; }
+.data-table tr:hover:not(.empty-row) { background: #faf8f5; }
+.data-table tr.empty-row td { border-bottom: none; height: 43px; padding: 0; pointer-events: none; background: white; }
+
+/* =========================================
+   BUTTONS & BADGES (legacy)
+   ========================================= */
+.action-btn  { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; color: white; margin-right: 5px; }
+.btn-warn    { background: #ff9800; }
+.btn-del     { background: #e53e3e; }
+.btn-suspend { background: #718096; }
+.btn-active  { background: #48bb78; }
+.btn-hide    { background: #a0aec0; }
+.btn-view    { background: #2b7bb9; }
+.badge-status { padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white; }
+.badge-red   { background: #e53e3e; padding: 4px 10px; border-radius: 12px; color: white; font-weight: bold; font-size: 13px; }
+
+/* =========================================
+   MODALS
+   ========================================= */
+.modal-overlay {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+}
+.modal-content {
+    background: #fff;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.modal-header  { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.modal-title   { margin: 0; font-size: 20px; font-weight: bold; color: #333; }
+.close-modal-btn { font-size: 24px; cursor: pointer; color: #888; }
+.modal-wide    { max-width: 750px; }
+
+.report-reasons-box { background: #fff5f5; border: 1px solid #fed7d7; padding: 15px; border-radius: 6px; margin-bottom: 20px; color: #c53030; font-size: 14px; max-height: 150px; overflow-y: auto; }
+.form-group    { margin-bottom: 15px; }
+.form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #333; }
+.form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
+.form-group input, .form-group select { padding: 9px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; width: 100%; box-sizing: border-box; }
+.btn-submit-warn { width: 100%; background: #ff9800; color: white; font-weight: bold; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+.btn-submit-warn:hover { background: #e68a00; }
+
+/* Custom Popup */
+.custom-popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center; }
+.custom-popup-box { background: #fff; padding: 30px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.3s ease; }
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.custom-popup-icon    { font-size: 50px; margin-bottom: 15px; }
+.custom-popup-title   { font-size: 20px; font-weight: bold; margin: 0 0 10px; color: #333; }
+.custom-popup-message { font-size: 15px; color: #666; margin-bottom: 25px; line-height: 1.5; }
+.custom-popup-buttons { display: flex; justify-content: center; gap: 10px; }
+.btn-popup         { padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.btn-popup-primary { background: #2b7bb9; color: white; }
+.btn-popup-primary:hover { background: #1a5a8a; }
+.btn-popup-danger  { background: #dc3545; color: white; }
+.btn-popup-danger:hover  { background: #c82333; }
+.btn-popup-cancel  { background: #e0e0e0; color: #333; }
+
+/* Extra modal */
+.img-grid   { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 12px; margin-top: 10px; }
+.img-cell   { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+.img-cell img { width: 100%; height: 110px; object-fit: cover; display: block; }
+.img-del-btn { position: absolute; top: 5px; right: 5px; background: rgba(229,62,62,0.9); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+.form-row-2 { display: flex; gap: 12px; }
+.form-row-2 .form-group { flex: 1; }
+.info-section { background: #f9fbfd; border-radius: 6px; padding: 12px 15px; margin-bottom: 15px; font-size: 14px; color: #333; }
+.info-section span { font-weight: bold; color: #2b7bb9; }
+
+/* =========================================
+   PAGINATION
+   ========================================= */
+.pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    background: white;
+    border-top: 1px solid #f0ece8;
+    border-radius: 0 0 10px 10px;
+    margin-top: -1px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.pagination-info { font-size: 13px; color: #888; }
+.pagination-btns { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.pg-btn {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 14px;
+    border: 1.5px solid #b8a898;
+    border-radius: 8px;
+    background: #fff;
+    color: #6b523f;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: 0.15s;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.pg-btn:hover:not(:disabled) { background: #f5ede4; border-color: #8b7355; color: #4a3f35; }
+.pg-btn.active   { background: #8b7355; color: white; border-color: #8b7355; font-weight: bold; box-shadow: 0 2px 6px rgba(139,115,85,0.3); }
+.pg-btn:disabled { opacity: 0.4; cursor: default; }
+.pg-ellipsis     { line-height: 38px; padding: 0 4px; color: #aaa; font-size: 14px; }
+
+/* =========================================
+   REPORT DETAIL CARDS
+   ========================================= */
+.rd-card { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; background: #fff; border: 1px solid #e8e4df; border-radius: 10px; padding: 14px 16px; transition: box-shadow 0.15s; }
+.rd-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+.rd-card-left  { display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0; }
+.rd-type-icon  { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.rd-card-info  { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.rd-type-label { font-size: 14px; font-weight: 600; color: #333; }
+.rd-desc       { font-size: 12px; color: #777; word-break: break-word; }
+.rd-meta       { display: flex; gap: 12px; font-size: 11px; color: #aaa; margin-top: 2px; flex-wrap: wrap; }
+.rd-card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+.rd-status-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.rd-actions    { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.rd-btn        { padding: 5px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Sarabun','Prompt',sans-serif; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: opacity 0.15s; white-space: nowrap; }
+.rd-btn:hover  { opacity: 0.85; }
+.rd-btn-view    { background: #dbeafe; color: #1e40af; }
+.rd-btn-resolve { background: #d1fae5; color: #065f46; }
+.rd-btn-dismiss { background: #fee2e2; color: #991b1b; }
+
+/* =========================================
+   PROPERTY TABLE — Status + Action inline
+   ========================================= */
+.prop-action-cell { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 8px 12px; min-width: 0; }
+.prop-badge       { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.prop-badge-pub   { background: #d1fae5; color: #065f46; }
+.prop-badge-hid   { background: #f3f4f6; color: #6b7280; }
+.prop-btn-group   { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.prop-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    font-family: 'Sarabun','Segoe UI',sans-serif;
+    transition: opacity 0.15s, transform 0.1s;
+    line-height: 1;
+}
+.prop-btn:hover  { opacity: 0.82; transform: translateY(-1px); }
+.prop-btn:active { transform: translateY(0); }
+.prop-btn-edit    { background: #dbeafe; color: #1d4ed8; }
+.prop-btn-view    { background: #e0e7ff; color: #3730a3; }
+.prop-btn-pub     { background: #d1fae5; color: #065f46; }
+.prop-btn-hide    { background: #fef3c7; color: #92400e; }
+.prop-btn-del     { background: #fee2e2; color: #991b1b; }
+.prop-btn-promote { background: #ede9fe; color: #5b21b6; }
+.prop-btn-demote  { background: #f3f4f6; color: #374151; }
+
+/* =========================================
+   REPORTS TABLE — badge + action inline
+   ========================================= */
+.rep-action-cell  { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+.rep-badge-group  { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; flex-shrink: 0; }
+.rep-badge        { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; line-height: 1; }
+
+/* =========================================
+   USERS TABLE — badge + action inline
+   ========================================= */
+.usr-action-cell  { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+.usr-badge        { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; line-height: 1; }
+.usr-badge-admin  { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+
+/* =========================================
+   APPEALS TABLE — action cell layout
+   ========================================= */
+/* คอลัมน์ "สถานะ & การจัดการ": badge บน + ปุ่มล่าง, ไม่ wrap ทับกัน */
+.appeal-action-cell {
+    padding: 8px 12px;
+    vertical-align: middle;
+    /* บังคับ badge + ปุ่มทั้งหมดอยู่แถวเดียวกัน */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 4px;
+}
+/* ซ่อน .appeal-status-pill margin เดิม เพราะตอนนี้อยู่ใน flex row แล้ว */
+.appeal-status-pill {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+/* .appeal-btn-row ถูกยุบออก — ปุ่มอยู่ใน .appeal-action-cell โดยตรงแล้ว */
+.appeal-btn-row {
+    display: contents; /* ทำให้ children ลอยขึ้นมาอยู่ใน flex parent โดยตรง */
+}
+/* ปุ่มใน appeal cell — กะทัดรัด ไม่ wrap */
+.appeal-action-cell .prop-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 4px 8px;
+    font-size: 11.5px;
+}
+
+/* =========================================
+   APPEAL CARDS — คำร้องโต้แย้ง (legacy card style)
+   ========================================= */
+.appeal-card {
+    background: #fff;
+    border: 1px solid #e8e4df;
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: box-shadow 0.15s;
+}
+.appeal-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+.appeal-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* =========================================
+   BAN REASON MODAL — dropdown + textarea
+   ========================================= */
+#banReasonModal .form-group select,
+#banReasonModal .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #dcd3c6;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+#banReasonModal select:focus,
+#banReasonModal textarea:focus {
+    outline: none;
+    border-color: #dc3545;
+    box-shadow: 0 0 0 2px rgba(220,53,69,0.15);
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
+/* ── Tablet & Mobile (≤992px) ──
+   เปลี่ยน sidebar เป็น top bar + hamburger   */
+@media (max-width: 992px) {
+
+    /* 1. body เปลี่ยนเป็นคอลัมน์แนวตั้ง + scroll ได้ */
+    body {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    /* 2. sidebar กลายเป็น top-bar */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: column;
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        z-index: 200;
+    }
+
+    /* 3. header bar: title ซ้าย + hamburger ขวา */
+    .sidebar-header {
+        justify-content: space-between;
+        padding: 13px 16px;
+        font-size: 17px;
+    }
+
+    /* 4. แสดง hamburger บน mobile */
+    .sidebar-toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 28px;
+        height: 22px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        flex-shrink: 0;
+    }
+    .sidebar-toggle span {
+        display: block;
+        height: 3px;
+        width: 100%;
+        background: #fff;
+        border-radius: 2px;
+        transition: transform 0.25s, opacity 0.25s;
+    }
+
+    /* 5. เมนู: ซ่อนโดย default — ต้องใช้ !important เพื่อ override Bootstrap + base CSS */
+    .menu-list {
+        display: none !important;
+        flex-direction: column !important;
+        flex-grow: 0 !important;
+        overflow-y: visible !important;
+        border-top: 1px solid #364759;
+    }
+    /* เปิดเมนูด้วย .open — specificity เดียวกันแต่บรรทัดหลังกว่า ต้องใช้ !important เช่นกัน */
+    .menu-list.open {
+        display: flex !important;
+    }
+
+    .menu-item {
+        display: block;
+        width: 100%;
+        padding: 15px 20px;
+        border-bottom: 1px solid #364759;
+        border-left: none !important;
+        font-size: 15px;
+        white-space: normal;
+        box-sizing: border-box;
+    }
+    .menu-item.active {
+        border-left: 5px solid #63b3ed !important;
+        border-bottom: 1px solid #364759 !important;
+    }
+
+    /* 6. sidebar-footer ซ่อนใน admin.css — inline <style> ใน admin.html จะแสดงเมื่อเปิดเมนู */
+    .sidebar-footer { display: none !important; }
+
+    /* 7. main-content เต็มความกว้าง */
+    .main-content {
+        flex: none;
+        width: 100%;
+        padding: 16px;
+        overflow: visible;
+        min-height: auto;
+        height: auto;
+    }
+
+    /* 8. tab-content ไม่ต้อง flex ใน mobile */
+    .tab-content {
+        flex: none;
+        min-height: auto;
+    }
+
+    /* 9. table-wrapper scroll แนวนอน */
+    .table-wrapper {
+        overflow-x: auto;
+        overflow-y: visible;
+        -webkit-overflow-scrolling: touch;
+        flex-shrink: 0;
+    }
+    .data-table { min-width: 560px; }
+}
+
+/* ── Mobile (≤640px) ── */
+@media (max-width: 640px) {
+    .page-title    { font-size: 16px; }
+    .modal-content { width: 95vw; max-width: 95vw; padding: 16px; }
+    .modal-wide    { max-width: 95vw; }
+
+    .filter-bar { flex-direction: column; align-items: stretch; }
+    .filter-bar input,
+    .filter-bar select { width: 100%; min-width: unset; }
+    #propSearch, #userSearch { width: 100%; }
+    .admin-filter-bar { flex-direction: column; align-items: stretch; }
+    .admin-filter-input,
+    .admin-filter-select { width: 100%; min-width: unset; flex: none; }
+
+    /* action cells ซ้อนแนวตั้ง */
+    .prop-action-cell,
+    .rep-action-cell,
+    .usr-action-cell { flex-direction: column; align-items: flex-start; gap: 5px; }
+
+    /* appeal cell: ปุ่มอนุญาตให้ wrap ได้บน mobile */
+    .appeal-btn-row { flex-wrap: wrap; }
+    .appeal-action-cell { padding: 8px 10px; flex-wrap: wrap; }
+
+    /* appeal card: stack action buttons below info */
+    .appeal-card > div { flex-direction: column; }
+    .appeal-card > div > div:last-child { flex-direction: row; flex-wrap: wrap; }
+
+    .img-grid { grid-template-columns: repeat(auto-fill, minmax(100px,1fr)); }
+
+    .rd-card { flex-direction: column; }
+    .rd-card-right { align-items: flex-start; }
+}
+
+/* ── Small mobile (≤400px) ── */
+@media (max-width: 400px) {
+    .data-table th,
+    .data-table td { padding: 6px 8px; font-size: 12px; }
+    .prop-btn      { font-size: 11px; padding: 4px 7px; }
+    .rep-badge,
+    .usr-badge,
+    .prop-badge    { font-size: 10px; padding: 2px 7px; }
+    .action-btn    { font-size: 11px; padding: 4px 7px; }
+}

@@ -1,0 +1,247 @@
+﻿
+<style>
+.sm-wrap { padding: 16px 8px; font-size: 13px; }
+.sm-node {
+  display: inline-flex; flex-direction: column; align-items: center;
+  padding: 7px 14px; border-radius: 8px; border: 0.5px solid;
+  text-align: center; cursor: pointer; line-height: 1.4;
+  transition: opacity 0.15s;
+}
+.sm-node:hover { opacity: 0.75; }
+.sm-title { font-weight: 500; font-size: 13px; color: inherit; }
+.sm-sub { font-size: 11px; margin-top: 2px; }
+
+.c-teal  { background:#E1F5EE; border-color:#0F6E56; color:#085041; }
+.c-teal .sm-sub { color:#0F6E56; }
+.c-blue  { background:#E6F1FB; border-color:#185FA5; color:#0C447C; }
+.c-blue .sm-sub { color:#185FA5; }
+.c-amber { background:#FAEEDA; border-color:#854F0B; color:#633806; }
+.c-amber .sm-sub { color:#854F0B; }
+.c-purple{ background:#EEEDFE; border-color:#534AB7; color:#3C3489; }
+.c-purple .sm-sub { color:#534AB7; }
+.c-green { background:#EAF3DE; border-color:#3B6D11; color:#27500A; }
+.c-green .sm-sub { color:#3B6D11; }
+.c-coral { background:#FAECE7; border-color:#993C1D; color:#712B13; }
+.c-coral .sm-sub { color:#993C1D; }
+.c-gray  { background:#F1EFE8; border-color:#5F5E5A; color:#444441; }
+.c-gray .sm-sub { color:#5F5E5A; }
+
+.row { display: flex; justify-content: center; gap: 12px; position: relative; }
+.col { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+.vline {
+  width: 1px; background: var(--color-border-secondary);
+  margin: 0 auto;
+}
+.hline {
+  height: 1px; background: var(--color-border-secondary);
+}
+.branch {
+  display: flex; align-items: flex-start; justify-content: center;
+  position: relative;
+}
+.branch-line {
+  position: absolute; top: 0; height: 1px;
+  background: var(--color-border-secondary);
+}
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 20px; padding: 12px 16px; border: 0.5px dashed var(--color-border-secondary); border-radius: 8px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-text-secondary); }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; border: 0.5px solid; flex-shrink: 0; }
+/* =========================================
+   🌿 OAKSTAY - MINIMALIST THEME (MUJI STYLE)
+   ========================================= */
+/* 1. พื้นหลังเว็บแบบคลีนๆ สีครีมอ่อน (Floral White) */
+body { background-color: #faf8f5 !important; color: #333 !important; }
+
+/* 2. แถบ Header และ โลโก้ */
+.header { background: #ffffff !important; box-shadow: 0 1px 4px rgba(0,0,0,0.03) !important; border-bottom: 1px solid #f0f0f0 !important; }
+.logo span { color: #6b523f !important; } /* สีน้ำตาลโอ๊คเข้ม */
+
+/* 3. ปุ่มหลัก (Primary Buttons) เปลี่ยนจากสีน้ำเงิน/ส้ม เป็นสีเอิร์ธโทน */
+.btn-submit, .btn-search-primary, .btn-orange, .btn-popup-primary, .btn-add { 
+    background-color: #8b7355 !important; 
+    color: #ffffff !important; 
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-weight: 500 !important;
+    transition: 0.3s !important;
+}
+.btn-submit:hover, .btn-search-primary:hover, .btn-orange:hover, .btn-popup-primary:hover, .btn-add:hover { 
+    background-color: #6b523f !important; 
+}
+
+/* 4. ปุ่มรอง และปุ่มย้อนกลับ (แบคกราวน์สีครีมละมุนๆ) */
+.btn-back, .btn-back-header { 
+    background-color: #f5f0e6 !important; 
+    color: #6b523f !important; 
+    border: 1px solid #e8decb !important;
+}
+.btn-back:hover, .btn-back-header:hover { background-color: #ebe3d5 !important; }
+
+/* 5. ตัวหนังสือและลิงก์ต่างๆ ที่เคยเป็นสีฟ้าจัดๆ */
+.text-btn.blue { color: #8b7355 !important; }
+.section-title, h1, h2, h3 { color: #4a3f35 !important; }
+.search-tab.active { color: #8b7355 !important; border-bottom: 2px solid #8b7355 !important; }
+
+/* 6. การ์ด (กล่องหอพัก, กล่องฟอร์ม) ลดเงาให้ดูแบน คลีน สบายตา */
+.property-card, .card, .container, .main-search-wrapper, .modal-content, .custom-popup-box, .profile-card-large {
+    background: #ffffff !important;
+    border: 1px solid #efefef !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02) !important;
+    border-radius: 12px !important;
+}
+
+/* 7. ช่องกรอกข้อมูล (Input / Select / Textarea) */
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="tel"], select, textarea, .top-search {
+    background-color: #fafafa !important;
+    border: 1px solid #e4e4e4 !important;
+    border-radius: 8px !important;
+    color: #333 !important;
+}
+input:focus, select:focus, textarea:focus, .top-search:focus {
+    border-color: #8b7355 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1) !important;
+    outline: none !important;
+}
+
+/* 8. ปุ่มพิเศษ (ดูรายละเอียด, สลับหน้าเพจ) */
+.btn-view-full, .btn-view { background: #f5f0e6 !important; color: #8b7355 !important; border: none !important;}
+.btn-view-full:hover, .btn-view:hover { background: #ebe3d5 !important; }
+.page-btn { border-color: #e4e4e4 !important; color: #666 !important; }
+.page-btn.active { background: #8b7355 !important; color: white !important; border-color: #8b7355 !important;}
+</style>
+
+<div class="sm-wrap">
+
+  <!-- HOME -->
+  <div class="row">
+    <div class="sm-node c-teal" onclick="sendPrompt('index.html ควรมี section อะไรบ้าง')">
+      <span class="sm-title">หน้าหลัก (Home)</span>
+      <span class="sm-sub">index.html</span>
+    </div>
+  </div>
+
+  <!-- connector: home → L1 -->
+  <div style="display:flex;justify-content:center;"><div class="vline" style="height:16px;"></div></div>
+  <div style="position:relative;height:1px;margin:0 40px;">
+    <div class="hline" style="position:absolute;left:0;right:0;top:0;"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;padding:0 40px;">
+    <div class="vline" style="height:16px;width:1px;"></div>
+    <div class="vline" style="height:16px;width:1px;"></div>
+    <div class="vline" style="height:16px;width:1px;"></div>
+  </div>
+
+  <!-- L1: 3 columns -->
+  <div class="row" style="align-items:flex-start;">
+
+    <!-- COL A: ค้นหา -->
+    <div class="col" style="width:190px;">
+      <div class="sm-node c-blue" onclick="sendPrompt('หน้าค้นหาหอพักควรมีฟีเจอร์ filter อะไรบ้าง')" style="width:100%;box-sizing:border-box;">
+        <span class="sm-title">ค้นหาที่พัก</span>
+        <span class="sm-sub">ค้นตามทำเล / ราคา</span>
+      </div>
+      <div class="vline" style="height:16px;"></div>
+      <div class="sm-node c-blue" onclick="sendPrompt('view-property.html ควรแสดงข้อมูลอะไรบ้าง')" style="width:100%;box-sizing:border-box;">
+        <span class="sm-title">รายละเอียดที่พัก</span>
+        <span class="sm-sub">view-property.html</span>
+        <span class="sm-sub">รูปภาพ, แผนที่</span>
+      </div>
+    </div>
+
+    <!-- COL B: Auth -->
+    <div class="col" style="width:200px;">
+      <div class="sm-node c-amber" onclick="sendPrompt('Login popup modal ควรออกแบบยังไง')" style="width:100%;box-sizing:border-box;">
+        <span class="sm-title">เข้าสู่ระบบ / สมัครสมาชิก</span>
+        <span class="sm-sub">Popup Modal · index.html</span>
+      </div>
+    </div>
+
+    <!-- COL C: สมาชิก -->
+    <div class="col" style="width:190px;">
+      <div class="sm-node c-purple" onclick="sendPrompt('profile.html ควรมี layout แบบไหน')" style="width:100%;box-sizing:border-box;">
+        <span class="sm-title">จัดการของสมาชิก</span>
+        <span class="sm-sub">profile.html</span>
+      </div>
+
+      <div class="vline" style="height:16px;"></div>
+
+      <!-- sub-branch: ประกาศ + โปรไฟล์ -->
+      <div style="position:relative;height:1px;width:100%;">
+        <div class="hline" style="position:absolute;left:0;right:0;top:0;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;width:100%;">
+        <div class="vline" style="height:16px;width:1px;"></div>
+        <div class="vline" style="height:16px;width:1px;"></div>
+      </div>
+      <div style="display:flex;gap:8px;width:100%;">
+        <!-- ประกาศของฉัน -->
+        <div class="col" style="flex:1;">
+          <div class="sm-node c-purple" onclick="sendPrompt('ส่วนจัดการประกาศควรมีฟีเจอร์อะไร')" style="width:100%;box-sizing:border-box;">
+            <span class="sm-title">ประกาศของฉัน</span>
+          </div>
+          <div class="vline" style="height:12px;"></div>
+          <div style="position:relative;height:1px;width:100%;">
+            <div class="hline" style="position:absolute;left:0;right:0;top:0;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;width:100%;">
+            <div class="vline" style="height:12px;width:1px;"></div>
+            <div class="vline" style="height:12px;width:1px;"></div>
+            <div class="vline" style="height:12px;width:1px;"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;width:100%;">
+            <div class="sm-node c-green" onclick="sendPrompt('add-property.html ควรมี input fields อะไรบ้าง')" style="width:100%;box-sizing:border-box;">
+              <span class="sm-title">ลงประกาศใหม่</span>
+              <span class="sm-sub">add-property.html</span>
+            </div>
+            <div class="sm-node c-amber" onclick="sendPrompt('edit-property.html ต่างจาก add ยังไง')" style="width:100%;box-sizing:border-box;">
+              <span class="sm-title">แก้ไขประกาศ</span>
+              <span class="sm-sub">edit-property.html</span>
+            </div>
+            <div class="sm-node c-gray" onclick="sendPrompt('ระบบ toggle visibility และลบประกาศ ควรทำงานยังไง')" style="width:100%;box-sizing:border-box;">
+              <span class="sm-title">เปิด/ปิด · ลบ</span>
+              <span class="sm-sub">action ใน profile</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ตั้งค่าโปรไฟล์ -->
+        <div class="col" style="flex:1;">
+          <div class="sm-node c-coral" onclick="sendPrompt('edit-profile.html ควรมีฟอร์มอะไรบ้าง')" style="width:100%;box-sizing:border-box;">
+            <span class="sm-title">ตั้งค่าโปรไฟล์</span>
+            <span class="sm-sub">edit-profile.html</span>
+          </div>
+          <div class="vline" style="height:12px;"></div>
+          <div style="display:flex;flex-direction:column;gap:6px;width:100%;">
+            <div class="sm-node c-coral" style="width:100%;box-sizing:border-box;">
+              <span class="sm-title">แก้ไขชื่อ-นามสกุล</span>
+            </div>
+            <div class="sm-node c-coral" onclick="sendPrompt('จัดการข้อมูลการติดต่อ เบอร์ Line Email')" style="width:100%;box-sizing:border-box;">
+              <span class="sm-title">ข้อมูลการติดต่อ</span>
+              <span class="sm-sub">เบอร์, Line, Email</span>
+            </div>
+            <div class="sm-node c-coral" onclick="sendPrompt('flow การเปลี่ยนรหัสผ่านควรเป็นยังไง')" style="width:100%;box-sizing:border-box;">
+              <span class="sm-title">เปลี่ยนรหัสผ่าน</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#E1F5EE;border-color:#0F6E56;"></div>หน้าหลัก</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#E6F1FB;border-color:#185FA5;"></div>สาธารณะ</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FAEEDA;border-color:#854F0B;"></div>Authentication</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#EEEDFE;border-color:#534AB7;"></div>สมาชิก</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#EAF3DE;border-color:#3B6D11;"></div>เพิ่มข้อมูล</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FAECE7;border-color:#993C1D;"></div>จัดการโปรไฟล์</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#F1EFE8;border-color:#5F5E5A;"></div>Action</div>
+  </div>
+</div>
+

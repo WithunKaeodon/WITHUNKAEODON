@@ -1,0 +1,218 @@
+﻿<div class="header">
+    <div class="header-inner">
+
+        <!-- โลโก้ -->
+        <a href="index.html" class="logo">
+            <img src="Icon.svg" alt="OakStay Logo">
+            <span>OakStay</span>
+        </a>
+
+        <!-- Search bar (desktop only) -->
+        <div class="top-search-container" style="position:relative;">
+            <input type="text" id="topSearchInput" class="top-search"
+                placeholder="ค้นหา ทำเล จังหวัด สถานศึกษา..."
+                oninput="onTopSearchInput(this.value)"
+                onkeydown="onTopSearchKeydown(event)"
+                autocomplete="off">
+            <div id="topSearchSuggestions" style="
+                display:none; position:absolute; top:calc(100% + 6px); left:0; right:0;
+                background:white; border:1px solid #dcd3c6; border-radius:8px;
+                box-shadow:0 8px 20px rgba(0,0,0,0.12); z-index:3000;
+                max-height:300px; overflow-y:auto;"></div>
+        </div>
+
+        <!-- ══ DESKTOP NAV (ซ่อนบน mobile) ══ -->
+        <div class="nav-links desktop-nav" id="navLinks">
+
+            <!-- ค้นหาแบบละเอียด -->
+            <div style="position:relative;">
+                <button id="advSearchBtn" class="text-btn" onclick="toggleAdvancedSearch()">🔍 ค้นหาแบบละเอียด ▼</button>
+            </div>
+
+            <span class="divider">|</span>
+            <button class="text-btn" onclick="openMapModal()">🗺️ ค้นหาจากแผนที่</button>
+            <span class="divider">|</span>
+
+            <!-- Guest (desktop) -->
+            <div id="guestMenu" style="display:flex;gap:15px;align-items:center;">
+                <button class="text-btn blue" onclick="openLogin()">เข้าสู่ระบบ</button>
+                <span class="divider">|</span>
+                <button class="text-btn blue" onclick="openRegister()">สมัครสมาชิก ฟรี</button>
+            </div>
+
+            <!-- Logged in (desktop) -->
+            <div id="userMenu" style="display:none;align-items:center;gap:15px;">
+                <a href="#" onclick="showFavorites()" style="text-decoration:none;position:relative;color:#333;">
+                    <span style="font-size:20px;">❤️</span>
+                    <span id="favCountBadge" class="fav-badge" style="display:none;position:absolute;top:-8px;right:-10px;">0</span>
+                </a>
+                <a href="chat.html" style="text-decoration:none;position:relative;color:#333;margin-right:5px;">
+                    <span style="font-size:20px;">💬</span>
+                    <span id="unreadBadge" style="display:none;position:absolute;top:-8px;right:-10px;background:red;color:white;border-radius:50%;padding:2px 6px;font-size:11px;font-weight:bold;">0</span>
+                </a>
+                <div class="dropdown">
+                    <button class="text-btn blue" onclick="toggleDropdown('userProfileMenu')" style="display:flex;align-items:center;gap:6px;">
+                        <span style="font-size:18px;">👤</span>
+                        <span id="displayUserEmail" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+                        <span style="font-size:10px;opacity:0.6;">▼</span>
+                    </button>
+                    <div class="dropdown-menu" id="userProfileMenu" style="min-width:210px;padding:8px 0;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,0.12);border:1px solid #ece8e1;white-space:nowrap;">
+                        <div style="padding:12px 16px 10px;border-bottom:1px solid #f0ece6;">
+                            <div style="font-size:12px;color:#aaa;margin-bottom:2px;">เข้าสู่ระบบแล้ว</div>
+                            <div id="dropdownUserName" style="font-size:14px;font-weight:600;color:#4a3f35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                        </div>
+                        <div id="ddAdminSection" style="display:none;">
+                            <div class="ddmenu-item" onclick="window.location.href='admin.html'"><span class="ddmenu-icon">🛡️</span> Admin Panel</div>
+                            <div style="border-top:1px solid #f0ece6;margin:6px 0;"></div>
+                            <div class="ddmenu-item ddmenu-danger" onclick="logoutUser()"><span class="ddmenu-icon">🚪</span> ออกจากระบบ</div>
+                        </div>
+                        <div id="ddUserSection">
+                            <div class="ddmenu-item" onclick="window.location.href='profile.html'"><span class="ddmenu-icon">📋</span> ประกาศของฉัน</div>
+                            <div class="ddmenu-item" onclick="window.location.href='profile.html#favorites'" id="ddFavItem">
+                                <span class="ddmenu-icon">❤️</span> ที่พักโปรด
+                                <span id="ddFavBadge" style="display:none;margin-left:auto;background:#e74c3c;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:600;"></span>
+                            </div>
+                            <div class="ddmenu-item" onclick="window.location.href='chat.html'">
+                                <span class="ddmenu-icon">💬</span> ข้อความ / แชท
+                                <span id="ddChatBadge" style="display:none;margin-left:auto;background:#e74c3c;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:600;"></span>
+                            </div>
+                            <div class="ddmenu-item" onclick="window.location.href='profile.html?tab=profile'"><span class="ddmenu-icon">👤</span> ข้อมูลส่วนตัว</div>
+                            <div class="ddmenu-item" onclick="window.location.href='add-property.html'"><span class="ddmenu-icon">➕</span> ลงประกาศใหม่</div>
+                            <div style="border-top:1px solid #f0ece6;margin:6px 0;"></div>
+                            <div class="ddmenu-item ddmenu-danger" onclick="logoutUser()"><span class="ddmenu-icon">🚪</span> ออกจากระบบ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <span class="divider">|</span>
+            <button class="btn-orange" onclick="checkLoginBeforePost()">ลงประกาศฟรี</button>
+
+        </div><!-- /desktop-nav -->
+
+        <!-- ปุ่ม Hamburger (mobile เท่านั้น) -->
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="เปิดเมนู">
+            <span></span><span></span><span></span>
+        </button>
+
+    </div><!-- /header-inner -->
+
+    <!-- ══ #advancedSearchDropdown อยู่นอก desktop-nav เพื่อไม่ถูก display:none บัง ══ -->
+    <div id="advancedSearchDropdown" class="adv-search-dropdown">
+        <!-- Mobile header bar (ซ่อนบน desktop ด้วย CSS) -->
+        <div class="adv-mobile-header">
+            <span class="adv-mobile-header-title">🔍 ค้นหาแบบละเอียด</span>
+            <button class="adv-mobile-close" onclick="_closeAdvancedSearch()" aria-label="ปิด">✕</button>
+        </div>
+        <div class="adv-search-body">
+            <div class="adv-cell">
+                <div class="adv-label">🔤 คำค้นหา</div>
+                <input type="text" id="advKeyword" placeholder="ชื่อที่พัก, มหาวิทยาลัย, ย่าน..." class="adv-input">
+            </div>
+            <div class="adv-cell">
+                <div class="adv-label">🏷️ ประเภทที่พัก</div>
+                <div style="display:flex;gap:6px;flex-wrap:nowrap;align-items:center;padding-top:4px;">
+                    <label class="adv-radio"><input type="radio" name="advTypeR" value="" checked> ทั้งหมด</label>
+                    <label class="adv-radio"><input type="radio" name="advTypeR" value="room"> หอพัก</label>
+                    <label class="adv-radio"><input type="radio" name="advTypeR" value="apartment"> อพาร์ตเมนต์</label>
+                    <label class="adv-radio"><input type="radio" name="advTypeR" value="house"> บ้านเช่า</label>
+                </div>
+            </div>
+            <div class="adv-cell">
+                <div class="adv-label">📍 ตำแหน่งที่ตั้ง</div>
+                <select id="advProvince" onchange="onAdvProvinceChange()" class="adv-select" style="margin-bottom:8px;"><option value="">ทุกจังหวัด</option></select>
+                <div style="display:flex;gap:8px;">
+                    <select id="advDistrict" onchange="onAdvDistrictChange()" disabled class="adv-select" style="flex:1;"><option value="">ทุกอำเภอ/เขต</option></select>
+                    <select id="advSubdistrict" disabled class="adv-select" style="flex:1;"><option value="">ทุกตำบล/แขวง</option></select>
+                </div>
+            </div>
+            <div class="adv-cell">
+                <div class="adv-label">💰 ราคา (บาท)</div>
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+                    <input type="number" id="advMinPrice" placeholder="ต่ำสุด" class="adv-input" style="flex:1;">
+                    <span style="color:#aaa;">–</span>
+                    <input type="number" id="advMaxPrice" placeholder="สูงสุด" class="adv-input" style="flex:1;">
+                </div>
+                <select id="advRentType" class="adv-select">
+                    <option value="">ทุกรูปแบบการเช่า</option>
+                    <option value="monthly">รายเดือน</option>
+                    <option value="daily">รายวัน</option>
+                    <option value="yearly">รายปี</option>
+                    <option value="term">รายเทอม</option>
+                </select>
+            </div>
+            <div class="adv-cell">
+                <div class="adv-label">🛏️ ภายในห้อง</div>
+                <div class="adv-check-grid">
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="hasAirConditioner" checked> เครื่องปรับอากาศ</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="hasFan" checked> พัดลม</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="hasWaterHeater" checked> เครื่องทำน้ำอุ่น</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="hasRefrigerator" checked> ตู้เย็น</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="hasInRoomWifi" checked> Wi-Fi ในห้อง</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="hasCableTV" checked> เคเบิลทีวี</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="hasSofa" checked> โซฟา</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="hasWorkDeskChair" checked> โต๊ะทำงาน</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="hasStove" checked> เตาปรุงอาหาร</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="isPetAllowed" checked> อนุญาตสัตว์เลี้ยง</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-room-amenity" value="isSmokingAllowed" checked> อนุญาตสูบบุหรี่</label>
+                </div>
+            </div>
+            <div class="adv-cell">
+                <div class="adv-label">🏢 ในอาคาร</div>
+                <div class="adv-check-grid">
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasKeycardAccess" checked> คีย์การ์ด</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasFingerprintAccess" checked> ลายนิ้วมือ</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasCCTV" checked> กล้อง CCTV</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasSecurityGuard" checked> ยาม รปภ.</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasBikeParking" checked> ที่จอดมอเตอร์ไซค์</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasCarParking" checked> ที่จอดรถยนต์</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasSwimmingPool" checked> สระว่ายน้ำ</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasFitness" checked> ฟิตเนส</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasLaundry" checked> ร้านซักรีด</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasElevator" checked> ลิฟต์</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasShop" checked> ร้านค้า</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasRestaurant" checked> ร้านอาหาร</label>
+                    <label class="adv-check"><input type="checkbox" class="adv-bldg-amenity" value="hasEvCharger" checked> สถานีชาร์จ EV</label>
+                </div>
+            </div>
+        </div><!-- /adv-search-body -->
+        <div class="adv-search-footer">
+            <button onclick="resetAdvancedFilter()" class="adv-btn-reset">↺ ล้างค่าทั้งหมด</button>
+            <button onclick="applyAdvancedFilter()" class="adv-btn-search">🔍 ค้นหาที่พัก</button>
+        </div>
+    </div><!-- /advancedSearchDropdown -->
+
+    <!-- ══ MOBILE NAV DRAWER (แยกจาก desktop nav) ══ -->
+    <div class="mobile-nav" id="mobileNav">
+
+        <!-- Guest section -->
+        <div class="mob-section" id="mobGuestSection">
+            <button class="mob-item mob-item-primary" onclick="openLogin(); closeMobileNav();">🔑 เข้าสู่ระบบ</button>
+            <button class="mob-item" onclick="openRegister(); closeMobileNav();">✨ สมัครสมาชิก ฟรี</button>
+        </div>
+
+        <!-- User section (ซ่อนไว้ก่อน) -->
+        <div class="mob-section" id="mobUserSection" style="display:none;">
+            <div class="mob-user-header" id="mobUserName">ผู้ใช้งาน</div>
+            <div class="mob-divider"></div>
+            <button class="mob-item" onclick="window.location.href='profile.html'"><span class="mob-icon">📋</span> ประกาศของฉัน</button>
+            <button class="mob-item" onclick="window.location.href='profile.html#favorites'"><span class="mob-icon">❤️</span> ที่พักโปรด</button>
+            <button class="mob-item" onclick="window.location.href='chat.html'"><span class="mob-icon">💬</span> ข้อความ / แชท</button>
+            <button class="mob-item" onclick="window.location.href='profile.html?tab=profile'"><span class="mob-icon">👤</span> ข้อมูลส่วนตัว</button>
+            <div class="mob-divider"></div>
+        </div>
+
+        <!-- เมนูทั่วไป -->
+        <button class="mob-item" onclick="event.stopPropagation(); shAdvSearch(); closeMobileNav();">🔍 ค้นหาแบบละเอียด</button>
+        <button class="mob-item" onclick="openMapModal(); closeMobileNav();">🗺️ ค้นหาจากแผนที่</button>
+        <button class="mob-item mob-item-orange" onclick="checkLoginBeforePost(); closeMobileNav();">➕ ลงประกาศฟรี</button>
+
+        <!-- Logout (แสดงเมื่อ login) -->
+        <div class="mob-section" id="mobLogoutSection" style="display:none;">
+            <div class="mob-divider"></div>
+            <button class="mob-item mob-item-danger" onclick="logoutUser()"><span class="mob-icon">🚪</span> ออกจากระบบ</button>
+        </div>
+
+    </div><!-- /mobile-nav -->
+
+</div><!-- /header -->

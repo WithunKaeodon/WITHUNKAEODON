@@ -1,0 +1,1018 @@
+﻿    /* เปลี่ยนฟอนต์หลักของเว็บเป็น Prompt */
+    body { margin: 0; font-family: 'Prompt', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e4e9f0; color: #333; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    
+    /* แถบด้านบน (Header) */
+    .btn-back-header { background: #eee; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; color: #555; text-decoration: none; font-weight: 500; transition: 0.2s; font-family: 'Prompt', sans-serif;}
+    .btn-back-header:hover { background: #ddd; }
+    .btn-logout { background: #ff4d4d; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-family: 'Prompt', sans-serif;}
+    .btn-logout:hover { background: #cc0000; }
+
+    /* โครงสร้างพื้นที่ด้านล่าง (ซ้าย-ขวา) */
+    .layout-container { display: flex; flex-grow: 1; overflow: hidden; min-height: 0; }
+
+    /* แถบเมนูด้านซ้าย (Sidebar) */
+    .sidebar { width: 260px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; z-index: 10; overflow-y: auto; flex-shrink: 0; }
+    
+    .sidebar-profile { padding: 30px 20px 20px; text-align: center; border-bottom: 1px solid #eee; }
+    .sidebar-profile img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #e3f2fd; margin-bottom: 10px; }
+    .sidebar-profile h3 { margin: 0; font-size: 16px; color: #333; font-weight: 600; }
+    .sidebar-profile p { margin: 5px 0 0 0; font-size: 13px; color: #777; }
+
+    .sidebar-nav { display: flex; flex-direction: column; padding: 15px 0; }
+    .nav-item { padding: 15px 25px; text-decoration: none; color: #555; font-weight: 500; font-size: 16px; display: flex; align-items: center; gap: 15px; border-left: 4px solid transparent; transition: 0.2s; cursor: pointer; font-family: 'Prompt', sans-serif;}
+    .nav-item:hover { background: #f9f9f9; color: #2b7bb9; }
+    .nav-item.active { background: #e3f2fd; color: #1a5a8a; border-left-color: #2b7bb9; font-weight: 600; }
+
+    /* พื้นที่เนื้อหาหลักด้านขวา */
+    .main-content { flex-grow: 1; overflow-y: auto; padding: 40px; min-height: 0; }
+    .content-section { display: none; animation: fadeIn 0.3s ease; width: 100%; margin: 0; }
+    .content-section.active { display: block; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #ddd; padding-bottom: 15px; }
+    .section-header h1 { margin: 0; color: #333; font-size: 24px; font-weight: 600; }
+    .btn-add { background: #2b7bb9; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; font-family: 'Prompt', sans-serif;}
+    .btn-add:hover { background: #1a5a8a; }
+
+    /* กล่องข้อมูลส่วนตัว */
+    .profile-card-large { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; align-items: flex-start; gap: 40px; border: 1px solid #eee; margin-top: 20px;}
+    .profile-card-large img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid #2b7bb9; }
+    .profile-info { flex-grow: 1; }
+    .profile-info h2 { margin: 0 0 5px 0; color: #1a5a8a; font-size: 28px; font-weight: 600;}
+    .profile-email { color: #777; font-size: 15px; margin-bottom: 20px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; }
+    .contact-list { margin-bottom: 20px; }
+    .contact-item-row { margin: 10px 0; color: #444; font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 10px;}
+    .contact-icon { display: inline-flex; justify-content: center; align-items: center; width: 30px; height: 30px; background: #f0f4f8; border-radius: 50%; font-size: 14px; }
+    .btn-edit-profile { display: inline-block; margin-top: 10px; background: #f39c12; color: white; padding: 10px 25px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px; transition: 0.2s; font-family: 'Prompt', sans-serif;}
+    .btn-edit-profile:hover { background: #e67e22; }
+
+    /* Property Cards */
+    .property-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .property-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: transform 0.2s; border: 1px solid #eee; display: flex; flex-direction: column;}
+    .property-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    
+    .card-image { width: 100%; height: 200px; object-fit: cover; background: #eee; }
+    .card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+    .card-title { font-size: 18px; font-weight: 600; margin: 0 0 10px 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .card-info { font-size: 14px; color: #666; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+    .card-price { font-size: 18px; font-weight: 600; color: #e74c3c; margin-top: auto; padding-top: 10px;}
+    
+    .status-toggle { display: flex; align-items: center; justify-content: space-between; background: #f9f9f9; padding: 10px 15px; border-top: 1px solid #eee; border-bottom: 1px solid #eee;}
+    .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #4CAF50; }
+    input:checked + .slider:before { transform: translateX(20px); }
+    
+    .card-actions { display: flex; justify-content: space-between; padding: 15px; gap: 10px; background: #fff; }
+    .action-btn { flex: 1; text-align: center; padding: 8px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; cursor: pointer; border: none; font-family: 'Prompt', sans-serif;}
+    .btn-view { background: #e3f2fd; color: #1a5a8a; }
+    .btn-edit { background: #fef5e7; color: #d35400; }
+    .btn-delete { background: #fdedec; color: #c0392b; }
+    .empty-state { text-align: center; padding: 50px; background: white; border-radius: 12px; border: 2px dashed #ccc; color: #777; grid-column: 1 / -1; }
+
+    /* Responsive มือถือ */
+    @media (max-width: 768px) {
+        .layout-container { flex-direction: column; overflow: auto; }
+        .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #ddd; z-index: 100; position: sticky; top: 0; flex-shrink: 0;}
+        .sidebar-profile { display: none; }
+        .sidebar-nav { flex-direction: row; overflow-x: auto; padding: 0; white-space: nowrap; }
+        .nav-item { padding: 15px; border-left: none; border-bottom: 3px solid transparent; }
+        .nav-item.active { border-left: none; border-bottom-color: #2b7bb9; }
+        .main-content { padding: 20px; overflow-y: visible; }
+        .profile-card-large { flex-direction: column; text-align: center; align-items: center; gap: 20px; padding: 20px;}
+        .contact-item-row { justify-content: center; }
+    }
+    /* =========================================
+   🌿 OAKSTAY - MINIMALIST THEME (MUJI STYLE)
+   ========================================= */
+/* 1. พื้นหลังเว็บแบบคลีนๆ สีครีมอ่อน (Floral White) */
+body { background-color: #faf8f5 !important; color: #333 !important; }
+
+/* 2. แถบ Header และ โลโก้ */
+
+/* 3. ปุ่มหลัก (Primary Buttons) เปลี่ยนจากสีน้ำเงิน/ส้ม เป็นสีเอิร์ธโทน */
+.btn-submit, .btn-search-primary, .btn-orange, .btn-popup-primary, .btn-add { 
+    background-color: #8b7355 !important; 
+    color: #ffffff !important; 
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-weight: 500 !important;
+    transition: 0.3s !important;
+}
+.btn-submit:hover, .btn-search-primary:hover, .btn-orange:hover, .btn-popup-primary:hover, .btn-add:hover { 
+    background-color: #6b523f !important; 
+}
+
+/* 4. ปุ่มรอง และปุ่มย้อนกลับ (แบคกราวน์สีครีมละมุนๆ) */
+.btn-back, .btn-back-header { 
+    background-color: #f5f0e6 !important; 
+    color: #6b523f !important; 
+    border: 1px solid #e8decb !important;
+}
+.btn-back:hover, .btn-back-header:hover { background-color: #ebe3d5 !important; }
+
+/* 5. ตัวหนังสือและลิงก์ต่างๆ ที่เคยเป็นสีฟ้าจัดๆ */
+.text-btn.blue { color: #8b7355 !important; }
+.section-title, h1, h2, h3 { color: #4a3f35 !important; }
+.search-tab.active { color: #8b7355 !important; border-bottom: 2px solid #8b7355 !important; }
+
+/* 6. การ์ด (กล่องหอพัก, กล่องฟอร์ม) ลดเงาให้ดูแบน คลีน สบายตา */
+.property-card, .card, .container, .main-search-wrapper, .modal-content, .custom-popup-box, .profile-card-large {
+    background: #ffffff !important;
+    border: 1px solid #efefef !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02) !important;
+    border-radius: 12px !important;
+}
+
+/* 7. ช่องกรอกข้อมูล (Input / Select / Textarea) */
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="tel"], select, textarea, .top-search {
+    background-color: #fafafa !important;
+    border: 1px solid #e4e4e4 !important;
+    border-radius: 8px !important;
+    color: #333 !important;
+}
+input:focus, select:focus, textarea:focus, .top-search:focus {
+    border-color: #8b7355 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1) !important;
+    outline: none !important;
+}
+
+/* 8. ปุ่มพิเศษ (ดูรายละเอียด, สลับหน้าเพจ) */
+.btn-view-full, .btn-view { background: #f5f0e6 !important; color: #8b7355 !important; border: none !important;}
+.btn-view-full:hover, .btn-view:hover { background: #ebe3d5 !important; }
+.page-btn { border-color: #e4e4e4 !important; color: #666 !important; }
+.page-btn.active { background: #8b7355 !important; color: white !important; border-color: #8b7355 !important;}
+/* =========================================
+   🌿 OAKSTAY - MINIMALIST THEME (อัปเดต: เพิ่มความชัดของกล่อง)
+   ========================================= */
+/* 1. พื้นหลังเว็บ */
+body { background-color: #f4f1ea !important; color: #333 !important; }
+
+/* 2. แถบ Header และ โลโก้ */
+
+/* 3. ปุ่มหลัก */
+.btn-submit, .btn-search-primary, .btn-orange, .btn-popup-primary, .btn-add { 
+    background-color: #8b7355 !important; 
+    color: #ffffff !important; 
+    border-radius: 8px !important;
+    border: none !important;
+    font-weight: 500 !important;
+    transition: 0.3s !important;
+    box-shadow: 0 4px 10px rgba(139, 115, 85, 0.2) !important; /* เพิ่มเงาให้ปุ่มดูน่ากด */
+}
+.btn-submit:hover, .btn-search-primary:hover, .btn-orange:hover, .btn-popup-primary:hover, .btn-add:hover { 
+    background-color: #6b523f !important; transform: translateY(-1px) !important;
+}
+
+/* 4. ปุ่มรอง */
+.btn-back, .btn-back-header { 
+    background-color: #ffffff !important; 
+    color: #6b523f !important; 
+    border: 1px solid #c8bca7 !important; /* ให้เห็นขอบปุ่มชัดๆ */
+}
+.btn-back:hover, .btn-back-header:hover { background-color: #f4f1ea !important; }
+
+/* 5. ตัวหนังสือและลิงก์ต่างๆ */
+.text-btn.blue { color: #8b7355 !important; }
+.section-title, h1, h2, h3 { color: #4a3f35 !important; }
+.search-tab.active { color: #8b7355 !important; border-bottom: 3px solid #8b7355 !important; font-weight: bold !important; }
+
+/* 6. 📦 แก้ไข: การ์ดและกล่องต่างๆ ให้เห็นกรอบชัดขึ้น */
+.property-card, .card, .container, .main-search-wrapper, .modal-content, .custom-popup-box, .profile-card-large {
+    background: #ffffff !important;
+    border: 1px solid #dcd3c6 !important; /* เปลี่ยนสีขอบให้เข้มขึ้นนิดนึง เป็นสีน้ำตาลอ่อน */
+    box-shadow: 0 4px 15px rgba(107, 82, 63, 0.06) !important; /* เพิ่มเงาสีน้ำตาลอ่อนให้กล่องลอยแยกจากพื้นหลัง */
+    border-radius: 12px !important;
+}
+
+/* 7. ✏️ แก้ไข: ช่องกรอกข้อมูล ให้มองเห็นง่ายเวลากดพิมพ์ */
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="tel"], select, textarea, .top-search {
+    background-color: #ffffff !important;
+    border: 1px solid #bbaea0 !important; /* ทำให้ขอบช่องกรอกเข้มขึ้น จะได้เห็นชัดว่าพิมพ์ตรงไหน */
+    border-radius: 8px !important;
+    color: #333 !important;
+    padding: 10px !important; /* เผื่อให้ช่องกว้างขึ้นนิดนึง */
+}
+input:focus, select:focus, textarea:focus, .top-search:focus {
+    border-color: #8b7355 !important;
+    box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.15) !important; /* เวลาคลิกพิมพ์จะมีไฮไลต์สีน้ำตาลอ่อนๆ */
+    outline: none !important;
+}
+
+/* 8. ปุ่มพิเศษ */
+.btn-view-full, .btn-view { background: #f4f1ea !important; color: #8b7355 !important; border: 1px solid #dcd3c6 !important;}
+.btn-view-full:hover, .btn-view:hover { background: #e2d9cc !important; }
+.page-btn { border-color: #dcd3c6 !important; color: #666 !important; }
+.page-btn.active { background: #8b7355 !important; color: white !important; border-color: #8b7355 !important;}
+
+.btn-popup{padding:10px 20px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:0.2s;font-family:'Prompt',sans-serif;}
+.btn-popup-primary{background:#8b7355;color:white;}
+.btn-popup-primary:hover{background:#6b523f;}
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 768px) {
+    body { overflow: auto !important; height: auto !important; }
+
+    .layout-container { flex-direction: column !important; overflow: visible !important; height: auto !important; }
+
+    .sidebar {
+        width: 100% !important; position: relative !important;
+        height: auto !important; border-right: none !important;
+        border-bottom: 1px solid #e2d9cc !important;
+    }
+    .sidebar-profile { display: none !important; }
+    .sidebar-nav { flex-direction: row !important; overflow-x: auto !important; padding: 0 !important; white-space: nowrap !important; }
+    .nav-item { border-left: none !important; border-bottom: 3px solid transparent !important; padding: 12px 14px !important; font-size: 13px !important; }
+    .nav-item.active { border-left: none !important; border-bottom-color: #8b7355 !important; }
+
+    .main-content { overflow: visible !important; padding: 16px !important; }
+
+    .profile-card-large { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 16px !important; padding: 20px 16px !important; }
+    .profile-card-large img { width: 100px !important; height: 100px !important; }
+    .contact-item-row { justify-content: center !important; }
+
+    .property-grid { grid-template-columns: 1fr !important; }
+    .section-header { flex-direction: column !important; gap: 12px !important; align-items: flex-start !important; }
+    .btn-add { width: 100% !important; justify-content: center !important; }
+    .card-actions { flex-wrap: wrap !important; }
+}
+@media (max-width: 480px) {
+    .main-content { padding: 12px !important; }
+}
+
+
+/* =========================================
+   🌿 PROFILE INLINE EDIT FIELDS
+   ========================================= */
+.profile-field-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #dcd3c6;
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 8px;
+    transition: box-shadow 0.2s;
+}
+.profile-field-row:hover {
+    box-shadow: 0 2px 10px rgba(139,115,85,0.1);
+}
+.pf-label {
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+    min-width: 120px;
+    flex-shrink: 0;
+}
+.pf-value {
+    flex: 1;
+    font-size: 15px;
+    color: #4a3f35;
+    font-weight: 500;
+    word-break: break-word;
+}
+.pf-edit-btn {
+    background: #f5f0e6;
+    color: #8b7355;
+    border: 1px solid #dcd3c6;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Prompt', sans-serif;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+.pf-edit-btn:hover {
+    background: #ebe3d5;
+    color: #6b523f;
+}
+
+.profile-field-edit {
+    background: #faf8f5;
+    border: 1px solid #dcd3c6;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 8px;
+    animation: slideDown 0.2s ease;
+}
+.profile-field-edit input[type="text"],
+.profile-field-edit input[type="tel"],
+.profile-field-edit input[type="password"] {
+    padding: 10px 14px !important;
+    border: 1px solid #bbaea0 !important;
+    border-radius: 8px !important;
+    font-family: 'Prompt', sans-serif !important;
+    font-size: 14px !important;
+    background: #fff !important;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+.profile-field-edit input:focus {
+    border-color: #8b7355 !important;
+    box-shadow: 0 0 0 3px rgba(139,115,85,0.12) !important;
+    outline: none !important;
+}
+
+.pf-action-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+.pf-save-btn {
+    background: #8b7355;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Prompt', sans-serif;
+    transition: 0.2s;
+}
+.pf-save-btn:hover { background: #6b523f; }
+
+.pf-cancel-btn {
+    background: #fff;
+    color: #888;
+    border: 1px solid #dcd3c6;
+    border-radius: 8px;
+    padding: 9px 22px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Prompt', sans-serif;
+    transition: 0.2s;
+}
+.pf-cancel-btn:hover { background: #f5f0e6; color: #6b523f; }
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   ❤️ FAVORITES TAB
+   ========================================= */
+.fav-card { position: relative; }
+
+.fav-remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.92);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s, background 0.2s;
+    z-index: 2;
+}
+.fav-remove-btn:hover {
+    transform: scale(1.15);
+    background: #fff0f0;
+}
+
+/* =========================================
+   SIDEBAR NAV - ENHANCED STYLE (ตามภาพ)
+   ========================================= */
+.nav-icon {
+    font-size: 18px;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* override nav-item ให้สวยขึ้น */
+.sidebar-nav .nav-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #5a5a5a !important;
+    border-left: 4px solid transparent !important;
+    border-radius: 0 !important;
+    transition: background 0.15s, color 0.15s !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    font-family: 'Prompt', sans-serif !important;
+    background: none !important;
+    border-bottom: 1px solid #f5f2ee !important;
+}
+.sidebar-nav .nav-item:last-child {
+    border-bottom: none !important;
+}
+.sidebar-nav .nav-item:hover {
+    background: #faf7f3 !important;
+    color: #8b7355 !important;
+    border-left-color: #dcd3c6 !important;
+}
+.sidebar-nav .nav-item.active {
+    background: #f5f0e8 !important;
+    color: #6b4f2a !important;
+    font-weight: 600 !important;
+    border-left-color: #8b7355 !important;
+}
+
+/* ปุ่มเพิ่มประกาศ — style แตกต่างนิดนึง */
+.sidebar-nav .nav-item-add {
+    color: #8b7355 !important;
+    font-weight: 600 !important;
+    margin-top: 4px !important;
+    border-top: 1px solid #ece8e1 !important;
+}
+.sidebar-nav .nav-item-add:hover {
+    background: #f5f0e8 !important;
+    color: #6b4f2a !important;
+}
+
+/* Mobile: ซ่อน nav-icon ที่ขนาดเล็กมาก */
+@media (max-width: 480px) {
+    .nav-icon { font-size: 15px; width: 20px; }
+    .sidebar-nav .nav-item { padding: 10px 12px !important; font-size: 13px !important; gap: 8px !important; }
+}
+
+/* =========================================
+   🚨 REPORT TAB - OWNER VIEW
+   ========================================= */
+
+/* Summary bar */
+.report-summary-bar {
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+.rpt-summary-warn {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    color: #7b5c00;
+    display: block;
+    padding: 10px 16px;
+    border-radius: 10px;
+}
+.rpt-summary-ok {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    display: block;
+    padding: 10px 16px;
+    border-radius: 10px;
+}
+
+/* Group card */
+.report-group-card {
+    background: #fff;
+    border: 1px solid #dcd3c6;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(107,82,63,0.05);
+    transition: box-shadow 0.2s;
+}
+.report-group-card:hover {
+    box-shadow: 0 4px 16px rgba(107,82,63,0.1);
+}
+.report-group-card--warn {
+    border-color: #f5c842;
+    border-left: 4px solid #e67e22;
+}
+
+/* Header ของ group card */
+.report-group-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #f5f2ee;
+    flex-wrap: wrap;
+}
+.report-cover {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    border: 1px solid #ece8e1;
+}
+.report-group-info {
+    flex: 1;
+    min-width: 0;
+}
+.report-group-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #4a3f35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+.report-group-meta {
+    font-size: 13px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.rpt-badge-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.rpt-badge-ok {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ปุ่มแก้ไข/ดูโพส */
+.report-group-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.rpt-btn-edit {
+    background: #8b7355;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Prompt', sans-serif;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+.rpt-btn-edit:hover { background: #6b523f; }
+.rpt-btn-view {
+    background: #f5f0e6;
+    color: #8b7355;
+    border: 1px solid #dcd3c6;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Prompt', sans-serif;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+.rpt-btn-view:hover { background: #ebe3d5; }
+
+/* รายการรายงานแต่ละรายการ */
+.report-rows-list {
+    padding: 4px 0;
+}
+.report-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 18px;
+    border-bottom: 1px solid #faf7f3;
+    flex-wrap: wrap;
+}
+.report-row:last-child { border-bottom: none; }
+.report-row-left {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+}
+.rpt-type {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a3f35;
+}
+.rpt-desc {
+    font-size: 12px;
+    color: #888;
+    word-break: break-word;
+}
+.report-row-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    flex-shrink: 0;
+}
+.rpt-date {
+    font-size: 11px;
+    color: #aaa;
+}
+
+/* Status badges */
+.rpt-status {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+.rpt-status-pending     { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+.rpt-status-inprogress  { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.rpt-status-resolved    { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+.rpt-status-dismissed   { background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; }
+
+/* responsive */
+@media (max-width: 600px) {
+    .report-group-header { flex-direction: column; align-items: flex-start; }
+    .report-group-actions { width: 100%; }
+    .rpt-btn-edit, .rpt-btn-view { flex: 1; text-align: center; }
+    .report-row { flex-direction: column; }
+    .report-row-right { align-items: flex-start; }
+}
+
+/* ── ปุ่ม แก้ไข inline ใน report row ── */
+.rpt-inline-fix-btn {
+    background: #fff176;
+    color: #5c4200;
+    border: none;
+    border-bottom: 2px solid #e6b800;
+    border-radius: 4px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Prompt', sans-serif;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+.rpt-inline-fix-btn:hover {
+    background: #ffe500;
+}
+
+/* ── profile tab redesign ── */
+#tab-profile .profile-field-row {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 14px 20px !important;
+}
+#tab-profile .profile-field-row:hover {
+    background: #fdfaf7 !important;
+    box-shadow: none !important;
+}
+#tab-profile .pf-label {
+    font-size: 11px !important;
+    color: #aaa !important;
+    font-weight: 500 !important;
+    margin-bottom: 2px !important;
+}
+#tab-profile .pf-value {
+    font-size: 15px !important;
+    color: #3a3028 !important;
+    font-weight: 500 !important;
+}
+#tab-profile .pf-edit-btn {
+    background: #f5f0e8 !important;
+    color: #8b7355 !important;
+    border: 1px solid #e8e0d4 !important;
+    font-size: 12px !important;
+    padding: 5px 14px !important;
+}
+
+/* ════════════════════════════════════════
+   ปุ่มจัดกลุ่มประกาศ + Group Modal v2
+   ════════════════════════════════════════ */
+
+.btn-group-manage {
+    background: #fff;
+    color: #8b7355;
+    border: 1.5px solid #dcd3c6;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Prompt', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+.btn-group-manage:hover {
+    background: #f5f0e6;
+    border-color: #8b7355;
+    box-shadow: 0 2px 8px rgba(139,115,85,0.12);
+}
+
+/* ── Overlay ──────────────────────────────── */
+.gm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(44,33,22,0.52);
+    z-index: 9998;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(2px);
+}
+
+/* ── Dialog box ───────────────────────────── */
+.gm-dialog {
+    background: #fff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    height: auto;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(44,33,22,0.22);
+    font-family: 'Prompt', sans-serif;
+    overflow: hidden;
+    margin: auto;
+    animation: gmSlideIn 0.22s ease;
+}
+@keyframes gmSlideIn {
+    from { opacity:0; transform: translateY(18px) scale(0.97); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+}
+
+/* ── Header — fixed top ───────────────────── */
+.gm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    background: linear-gradient(135deg, #8b7355 0%, #6b523f 100%);
+    flex-shrink: 0;
+}
+.gm-header-left { display: flex; align-items: center; gap: 12px; }
+.gm-header-icon { font-size: 28px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+.gm-header-title { font-size: 16px; font-weight: 700; color: #fff; line-height: 1.2; }
+.gm-header-sub { font-size: 12px; color: rgba(255,255,255,0.72); margin-top: 2px; line-height: 1.3; }
+.gm-close {
+    background: rgba(255,255,255,0.15);
+    border: none; border-radius: 50%;
+    width: 32px; height: 32px;
+    font-size: 15px; color: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s; flex-shrink: 0;
+}
+.gm-close:hover { background: rgba(255,255,255,0.28); }
+
+/* ── Body (scrollable middle only) ───────── */
+.gm-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 24px 8px;
+    flex: 1;
+    min-height: 0;
+}
+
+/* ── Footer — fixed bottom ────────────────── */
+.gm-footer {
+    flex-shrink: 0;
+    padding: 14px 24px 18px;
+    border-top: 1px solid #f0ece6;
+    background: #fff;
+}
+
+/* ── Section labels ───────────────────────── */
+.gm-section-label {
+    font-size: 13px; font-weight: 700; color: #6b523f;
+    margin-bottom: 10px;
+    padding-left: 8px; border-left: 3px solid #8b7355;
+}
+/* accordion toggle */
+.gm-section-toggle {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    cursor: pointer; user-select: none;
+    padding-right: 4px; border-radius: 0 4px 4px 0;
+    transition: color 0.15s;
+}
+.gm-section-toggle:hover { color: #4a3f35; }
+.gm-toggle-arrow { font-size: 11px; color: #aaa; transition: transform 0.2s; }
+.gm-toggle-arrow.collapsed { transform: rotate(180deg); }
+
+/* scrollable zone สำหรับกลุ่มที่มีอยู่ */
+.gm-existing-wrapper {
+    max-height: 180px;
+    overflow-y: auto; overflow-x: hidden;
+    padding-right: 2px;
+    transition: max-height 0.25s ease, opacity 0.2s;
+}
+.gm-existing-wrapper.collapsed {
+    max-height: 0 !important; opacity: 0;
+    pointer-events: none; overflow: hidden;
+}
+.gm-existing-wrapper::-webkit-scrollbar       { width: 4px; }
+.gm-existing-wrapper::-webkit-scrollbar-track { background: #f5f0e6; border-radius: 4px; }
+.gm-existing-wrapper::-webkit-scrollbar-thumb { background: #c8bca7; border-radius: 4px; }
+
+.gm-divider { height: 1px; background: #f0ece6; margin: 14px 0; }
+.gm-empty-hint { font-size: 13px; color: #bbb; text-align: center; padding: 10px 0; margin: 0; }
+
+/* ── Existing group cards (compact) ──────── */
+.gm-group-card {
+    background: #fdfaf6;
+    border: 1px solid #e8decb;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.gm-group-card--editing {
+    border-color: #8b7355;
+    box-shadow: 0 0 0 2px rgba(139,115,85,0.12);
+}
+.gm-group-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.gm-group-card-info { flex: 1; min-width: 0; }
+.gm-group-name { font-size: 13px; font-weight: 700; color: #4a3f35; margin-bottom: 4px; }
+.gm-group-members { display: flex; flex-wrap: wrap; gap: 3px; }
+.gm-chip {
+    background: #f0ece6; color: #6b523f;
+    border: 1px solid #dcd3c6; border-radius: 20px;
+    padding: 1px 8px; font-size: 11px; font-weight: 500; white-space: nowrap;
+}
+.gm-group-card-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.gm-btn-edit-grp {
+    padding: 3px 10px; border-radius: 6px;
+    background: #f5f0e6; color: #8b7355;
+    border: 1px solid #dcd3c6;
+    font-size: 11px; font-weight: 600;
+    font-family: 'Prompt', sans-serif;
+    cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.gm-btn-edit-grp:hover { background: #ebe3d5; }
+.gm-btn-del-grp {
+    padding: 3px 8px; border-radius: 6px;
+    background: #fdecea; color: #e74c3c;
+    border: 1px solid #f5c6c6;
+    font-size: 13px; cursor: pointer; transition: background 0.15s;
+}
+.gm-btn-del-grp:hover { background: #f9d7d7; }
+
+/* ── Form fields ──────────────────────────── */
+.gm-field { margin-bottom: 14px; }
+.gm-label { display: block; font-size: 12px; font-weight: 600; color: #666; margin-bottom: 6px; }
+.gm-input {
+    width: 100%; padding: 10px 12px;
+    border: 1.5px solid #dcd3c6; border-radius: 9px;
+    font-family: 'Prompt', sans-serif; font-size: 13px;
+    background: #fdfaf6; color: #333; box-sizing: border-box;
+    transition: border-color 0.18s, box-shadow 0.18s;
+}
+.gm-input:focus {
+    outline: none; border-color: #8b7355;
+    background: #fff; box-shadow: 0 0 0 3px rgba(139,115,85,0.1);
+}
+
+/* ── Property checkbox list ───────────────── */
+.gm-prop-list {
+    display: flex; flex-direction: column; gap: 7px;
+    max-height: 220px; overflow-y: auto;
+    overflow-x: hidden; padding-right: 2px;
+}
+.gm-prop-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    border: 1.5px solid #e8decb; border-radius: 10px;
+    background: #fff; cursor: pointer; position: relative;
+    transition: border-color 0.15s, background 0.15s;
+    min-width: 0; /* ป้องกัน overflow แนวนอน */
+}
+.gm-prop-item:hover { border-color: #b5a08a; background: #fdfaf6; }
+.gm-prop-item--checked { border-color: #8b7355; background: #f9f5ef; }
+.gm-prop-item input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: #8b7355; flex-shrink: 0; cursor: pointer;
+}
+.gm-thumb {
+    width: 46px; height: 38px;
+    border-radius: 7px; object-fit: cover;
+    flex-shrink: 0; border: 1px solid #e8decb;
+}
+.gm-thumb-empty {
+    display: flex; align-items: center; justify-content: center;
+    background: #f0ece6; font-size: 16px; color: #c8bca7;
+}
+.gm-prop-info { flex: 1; min-width: 0; }
+.gm-prop-title {
+    font-size: 13px; font-weight: 600; color: #4a3f35;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.gm-prop-price { font-size: 12px; color: #e74c3c; font-weight: 600; margin-top: 2px; }
+.gm-check-icon {
+    font-size: 15px; color: #8b7355; font-weight: 700;
+    opacity: 0; transition: opacity 0.15s; flex-shrink: 0;
+}
+.gm-prop-item--checked .gm-check-icon { opacity: 1; }
+
+/* ── Form action buttons (inside footer) ─── */
+.gm-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border-top: none;
+}
+.gm-btn-cancel-edit {
+    padding: 9px 18px; border-radius: 9px;
+    background: #f5f0e6; color: #8b7355;
+    border: 1px solid #dcd3c6;
+    font-size: 13px; font-weight: 600;
+    font-family: 'Prompt', sans-serif; cursor: pointer; transition: background 0.15s;
+}
+.gm-btn-cancel-edit:hover { background: #ebe3d5; }
+.gm-btn-save {
+    padding: 9px 22px; border-radius: 9px;
+    background: #8b7355; color: #fff; border: none;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Prompt', sans-serif; cursor: pointer;
+    transition: background 0.18s, transform 0.12s;
+    box-shadow: 0 3px 10px rgba(139,115,85,0.22);
+}
+.gm-btn-save:hover  { background: #6b523f; transform: translateY(-1px); }
+.gm-btn-save:active { transform: translateY(0); }
+
+.gm-prop-list::-webkit-scrollbar       { width: 4px; }
+.gm-prop-list::-webkit-scrollbar-track { background: #f5f0e6; border-radius: 4px; }
+.gm-prop-list::-webkit-scrollbar-thumb { background: #c8bca7; border-radius: 4px; }
+
+@media (max-width: 576px) {
+    .gm-dialog {
+        width: 95%;
+        max-height: 92vh;
+        border-radius: 14px;
+        margin: auto;
+    }
+    .gm-header  { padding: 14px 16px 12px; }
+    .gm-header-icon { font-size: 22px; }
+    .gm-header-title { font-size: 14px; }
+    .gm-header-sub { display: none; } /* ซ่อน subtitle บนมือถือ */
+    .gm-body    { padding: 14px 16px 6px; }
+    .gm-footer  { padding: 10px 16px 14px; }
+    .gm-prop-list { max-height: 200px; }
+    .gm-prop-item { padding: 8px 10px; gap: 8px; }
+    .gm-thumb   { width: 38px; height: 32px; }
+    .gm-prop-title { font-size: 12px; }
+    .gm-prop-price { font-size: 11px; }
+    .gm-input   { padding: 8px 10px; font-size: 12px; }
+    .gm-existing-wrapper { max-height: 150px; }
+    .gm-group-card { padding: 6px 10px; }
+    .gm-chip { font-size: 10px; padding: 1px 6px; }
+}
+
+/* ── property ที่ถูก group อื่นจองแล้ว (Exclusive) ── */
+.gm-prop-item--taken {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1.5px solid #f0ece6;
+    border-radius: 10px;
+    background: #faf8f5;
+    opacity: 0.7;
+    cursor: not-allowed;
+    min-width: 0;
+}
+.gm-taken-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: #e74c3c;
+    background: #fdecea;
+    border: 1px solid #f5c6c6;
+    border-radius: 20px;
+    padding: 2px 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}

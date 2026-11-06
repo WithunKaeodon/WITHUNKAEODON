@@ -1,0 +1,368 @@
+﻿/* ── Base ──────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: 'Prompt', 'Segoe UI', sans-serif;
+    background: #f4f1ea;
+    color: #333;
+    min-height: 100vh;
+    overflow-x: clip;
+}
+}
+
+/* ── Header จัดการโดย index.css ───────────────────────── */
+
+.btn-back {
+    background: #fff; color: #6b523f;
+    border: 1px solid #c8bca7; padding: 7px 14px;
+    border-radius: 8px; text-decoration: none;
+    font-size: 13px; font-weight: 500; transition: 0.2s;
+}
+.btn-back:hover { background: #f4f1ea; }
+.btn-chat {
+    background: #8b7355; color: #fff;
+    border: none; padding: 8px 16px;
+    border-radius: 8px; text-decoration: none;
+    font-size: 13px; font-weight: 600; transition: 0.2s;
+    cursor: pointer;
+}
+.btn-chat:hover { background: #6b523f; }
+
+/* ── 2-column layout ───────────────────────────────────── */
+.page-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - 70px);
+    overflow-x: clip;
+    gap: 0;
+    margin: 12px 16px;
+    border-radius: 14px;
+    border: 1px solid #dcd3c6;
+    box-shadow: 0 4px 20px rgba(107,82,63,0.08);
+    background: #fff;
+    flex: 1;
+}
+
+/* คอลัมน์ซ้าย */
+.col-left {
+    overflow: hidden;
+    padding: 12px;
+    border-right: none;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px 0 0 14px;
+}
+
+/* viewPhotos เต็มความสูง */
+#viewPhotos {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* viewMap เต็มความสูง */
+#viewMap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* คอลัมน์ขวา */
+.col-right {
+    overflow-y: auto;
+    padding: 18px 20px;
+    background: #fff;
+    border-radius: 0 14px 14px 0;
+}
+
+/* ── Carousel ──────────────────────────────────────────── */
+.carousel {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 52px); /* เต็มความสูงหักแค่ toggle bar */
+    border-radius: 12px;
+    overflow: hidden;
+    background: #111;
+    user-select: none;
+}
+.main-img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+/* ปุ่มซ้าย/ขวา */
+.carousel-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.45); color: #fff;
+    border: none; border-radius: 50%;
+    width: 44px; height: 44px;
+    font-size: 26px; line-height: 1;
+    cursor: pointer; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+}
+.carousel-btn:hover { background: rgba(0,0,0,0.7); }
+.carousel-prev { left: 12px; }
+.carousel-next { right: 12px; }
+/* Dots */
+.carousel-dots {
+    position: absolute; bottom: 12px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 7px; z-index: 10;
+}
+.dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    cursor: pointer; transition: 0.2s;
+    border: none;
+    padding: 0 !important;
+    margin: 0;
+    flex-shrink: 0;
+}
+.dot.active { background: #fff; transform: scale(1.3); }
+/* Counter (1/3) */
+.carousel-counter {
+    position: absolute; top: 12px; right: 14px;
+    background: rgba(0,0,0,0.45); color: #fff;
+    font-size: 12px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px; z-index: 10;
+}
+
+/* ── Toggle view ───────────────────────────────────────── */
+.view-toggle {
+    display: flex; gap: 6px; margin-bottom: 12px;
+}
+.toggle-btn {
+    flex: 1; padding: 8px; border-radius: 8px;
+    border: 1px solid #dcd3c6; background: #f5f0e6;
+    color: #8b7355; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: 0.2s;
+    font-family: 'Prompt', sans-serif;
+}
+.toggle-btn:hover { background: #ebe3d5; }
+.toggle-btn.active {
+    background: #8b7355; color: #fff;
+    border-color: #8b7355;
+}
+
+/* ── แผนที่ (ขยายตอน active) ──────────────────────────── */
+.map-display {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden; position: relative;
+    border-radius: 8px; border: 1px solid #dcd3c6;
+    background: #eee;
+}
+.map-content { position: absolute; width: 1500px; height: 1000px; left: -350px; top: -260px; }
+.map-image { width: 100%; height: 100%; object-fit: cover; }
+.map-pin { position: absolute; font-size: 32px; transform: translate(-50%,-100%); }
+
+/* ── section title ─────────────────────────────────────── */
+.section-title {
+    font-size: 14px !important; font-weight: 700 !important;
+    color: #6b523f !important; margin: 16px 0 8px !important;
+    border-left: 3px solid #8b7355 !important;
+    padding-left: 8px !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 8px !important;
+    text-align: left !important;
+}
+
+h1 {
+    font-size: 22px !important; font-weight: 700 !important;
+    color: #4a3f35 !important;
+    margin: 0 0 8px !important; line-height: 1.3 !important;
+}
+.type-badge {
+    display: inline-block;
+    background: #f5f0e6; color: #8b7355;
+    border: 1px solid #dcd3c6; border-radius: 20px;
+    padding: 3px 12px; font-size: 12px; font-weight: 600;
+    margin-bottom: 14px;
+}
+
+/* ── ราคา ──────────────────────────────────────────────── */
+.price-block {
+    background: #fff;
+    border: 1px solid #dcd3c6;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 16px;
+}
+.price-item { flex: 1; min-width: 100px; }
+.price-item .label { font-size: 11px; color: #999; font-weight: 500; }
+.price-item .value { font-size: 18px; font-weight: 700; color: #e74c3c; }
+
+/* ดู section-title ด้านบน */
+
+/* ── info grid ─────────────────────────────────────────── */
+.info-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; background: #fdfaf6;
+    border: 1px solid #e8decb; border-radius: 8px;
+    padding: 12px;
+}
+.info-item { font-size: 13px; display: flex; gap: 6px; }
+.info-item span:first-child { font-weight: 600; color: #666; white-space: nowrap; }
+
+/* ── amenities ─────────────────────────────────────────── */
+.amenities-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.amenity-tag {
+    background: #f5f0e6; color: #6b523f;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 500;
+    border: 1px solid #dcd3c6;
+}
+
+/* ── เจ้าของ ───────────────────────────────────────────── */
+.owner-profile {
+    display: flex; align-items: center; gap: 14px;
+    background: #fff; border: 1px solid #dcd3c6;
+    border-radius: 10px; padding: 14px;
+    margin-bottom: 8px;
+}
+.owner-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #dcd3c6; }
+
+/* ── รีวิว ─────────────────────────────────────────────── */
+#reviewList { display: flex; flex-direction: column; gap: 10px; }
+.review-card {
+    background: #fff; border: 1px solid #e8decb;
+    border-radius: 10px; padding: 12px 14px;
+}
+.review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.review-name { font-weight: 600; font-size: 14px; color: #4a3f35; }
+.review-date { font-size: 11px; color: #aaa; }
+.review-stars { font-size: 16px; color: #f5a623; margin-bottom: 5px; }
+.review-comment { font-size: 13px; color: #555; line-height: 1.6; }
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 768px) {
+    body { overflow: auto !important; height: auto !important; }
+
+    .page-layout {
+        grid-template-columns: 1fr !important;
+        overflow: visible !important;
+        height: auto !important;
+        margin: 8px !important;
+        border-radius: 10px !important;
+    }
+
+    .col-left {
+        overflow: visible !important;
+        padding: 10px !important;
+        border-right: none !important;
+        border-bottom: 1px solid #e2d9cc !important;
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    .col-right {
+        overflow: visible !important;
+        padding: 14px 16px !important;
+        border-radius: 0 0 10px 10px !important;
+    }
+
+    /* Carousel */
+    .main-img { height: 240px !important; }
+    .carousel { height: auto !important; }
+
+    /* Toggle buttons */
+    .view-toggle { gap: 8px !important; }
+    .toggle-btn { font-size: 13px !important; padding: 7px !important; }
+
+    /* Map */
+    #leafletMapView { min-height: 240px !important; }
+    .map-display { height: 240px !important; }
+
+    /* Info grid */
+    .info-grid { grid-template-columns: 1fr !important; }
+
+    /* Price block */
+    .price-block { flex-direction: column !important; gap: 8px !important; }
+    .price-item { min-width: unset !important; }
+
+    /* Owner */
+    .owner-profile { flex-direction: column !important; text-align: center !important; }
+
+    /* Review */
+    #reviewSummary { flex-direction: column !important; align-items: center !important; }
+
+    /* Header buttons */
+    .sh-page-btns { flex-wrap: wrap !important; gap: 6px !important; }
+    .sh-page-btns a { font-size: 12px !important; padding: 6px 10px !important; }
+}
+
+@media (max-width: 480px) {
+    .main-img { height: 200px !important; }
+    .page-layout { margin: 4px !important; }
+    h1 { font-size: 18px !important; }
+}
+
+
+/* ════════════════════════════════════════
+   Group Pill Tabs (สลับประกาศในกลุ่ม)
+   ════════════════════════════════════════ */
+
+.group-pill-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.group-pill-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #aaa;
+    letter-spacing: 0.3px;
+    margin-right: 2px;
+    white-space: nowrap;
+}
+
+/* pill ปัจจุบัน — highlight */
+.group-pill--active {
+    display: inline-block;
+    background: #8b7355;
+    color: #fff;
+    border: 1.5px solid #8b7355;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Prompt', sans-serif;
+    white-space: nowrap;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: default;
+}
+
+/* pill โพสต์อื่น — กดได้ */
+.group-pill--other {
+    display: inline-block;
+    background: #f5f0e6;
+    color: #8b7355;
+    border: 1.5px solid #dcd3c6;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Prompt', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.15s;
+}
+.group-pill--other:hover {
+    background: #ebe3d5;
+    border-color: #8b7355;
+    box-shadow: 0 2px 6px rgba(139,115,85,0.15);
+}

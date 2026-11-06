@@ -1,0 +1,396 @@
+﻿/* =========================================
+   ADD-PROPERTY — Compact single-page, 2-col grid
+   OakStay Earth Tone
+   ========================================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Prompt', 'Segoe UI', sans-serif;
+  background: #f4f1ea;
+  color: #333;
+  overflow-y: auto;
+}
+
+/* ── Page wrapper ─────────────────────────── */
+.page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 20px 40px;
+}
+
+/* ── Top action bar (sticky) ─────────────── */
+.page-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #dcd3c6;
+  border-radius: 12px;
+  padding: 12px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(107,82,63,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #4a3f35;
+}
+
+.topbar-actions { display: flex; gap: 10px; }
+
+.btn-save-top {
+  background: #8b7355;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 20px;
+  font-family: 'Prompt', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 3px 8px rgba(139,115,85,0.2);
+}
+.btn-save-top:hover { background: #6b523f; transform: translateY(-1px); }
+
+.btn-cancel-top {
+  background: #ffffff;
+  color: #6b523f;
+  border: 1px solid #c8bca7;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-family: 'Prompt', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-cancel-top:hover { background: #f4f1ea; }
+
+/* ── 2-column grid ───────────────────────── */
+.edit-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: stretch;        /* ทำให้ col สองฝั่งสูงเท่ากัน */
+}
+
+.col-left, .col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* card-stretch: ยืดเต็มความสูงที่เหลือของคอลัมน์ */
+.card-stretch {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* field group สุดท้ายใน card-stretch ยืดตาม */
+.card-stretch .field-group:last-of-type {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* input ถนน/ซอย/เลขที่ยืดเต็มพื้นที่ที่เหลือ ข้อความชิดบน */
+.card-stretch .field-group:last-of-type input[type="text"],
+.card-stretch .field-group:last-of-type .address-textarea {
+  flex-grow: 1;
+  min-height: 38px;
+  align-self: stretch;
+  vertical-align: top;
+  padding-top: 8px;
+}
+
+/* textarea style */
+.address-textarea {
+  width: 100%;
+  resize: none;
+  border: 1px solid #bbaea0;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: 'Prompt', sans-serif;
+  background: #ffffff;
+  color: #333;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  line-height: 1.5;
+}
+.address-textarea:focus {
+  outline: none;
+  border-color: #8b7355;
+  box-shadow: 0 0 0 3px rgba(139,115,85,0.12);
+}
+
+/* col-span row 2 */
+.col-span-2-left  { grid-column: 1; }
+.col-span-2-right { grid-column: 2; }
+
+/* ── Card sections ───────────────────────── */
+.card-section {
+  background: #ffffff;
+  border: 1px solid #dcd3c6;
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(107,82,63,0.05);
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a3f35;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ede8df;
+  letter-spacing: 0.2px;
+}
+
+/* ── Field groups ────────────────────────── */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.field-group:last-child { margin-bottom: 0; }
+
+.field-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.field-row .field-group {
+  flex: 1;
+  min-width: 80px;
+  margin-bottom: 0;
+}
+
+label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #5a4f45;
+}
+.req { color: #e74c3c; }
+
+input[type="text"],
+input[type="number"],
+select {
+  padding: 8px 10px;
+  border: 1px solid #bbaea0;
+  border-radius: 7px;
+  font-size: 13px;
+  font-family: 'Prompt', sans-serif;
+  background: #ffffff;
+  color: #333;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: #8b7355;
+  box-shadow: 0 0 0 3px rgba(139,115,85,0.12);
+}
+
+/* ── Map button ──────────────────────────── */
+.btn-map {
+  background: #f5f0e6;
+  color: #6b523f;
+  border: 1.5px dashed #c8bca7;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Prompt', sans-serif;
+  text-align: center;
+  transition: background 0.2s, border-color 0.2s;
+  margin-bottom: 6px;
+}
+.btn-map:hover { background: #ebe3d5; border-color: #8b7355; }
+
+.pin-status {
+  font-size: 12px;
+  color: #28a745;
+  font-weight: 500;
+}
+
+/* ── Checkboxes ──────────────────────────── */
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 7px 10px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #4a4040;
+  cursor: pointer;
+  line-height: 1.3;
+}
+.checkbox-item input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: #8b7355;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+/* ── Image upload ────────────────────────── */
+.upload-box {
+  border: 2px dashed #c8bca7;
+  padding: 16px;
+  text-align: center;
+  border-radius: 9px;
+  background: #faf7f2;
+  cursor: pointer;
+  display: block;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: 'Prompt', sans-serif;
+  font-size: 13px;
+  color: #7a6f65;
+  user-select: none;
+  margin-bottom: 12px;
+}
+.upload-box:hover { border-color: #8b7355; background: #f5f0e6; color: #6b523f; }
+.upload-icon { font-size: 24px; margin-bottom: 4px; }
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 8px;
+}
+.preview-grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 7px;
+  border: 1px solid #ddd;
+  display: block;
+}
+
+.clear-images-btn {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #dc3545;
+  cursor: pointer;
+  font-family: 'Prompt', sans-serif;
+}
+.clear-images-btn:hover { text-decoration: underline; }
+
+/* ── Map modal (override index.css !important) */
+.map-modal.modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.6) !important;
+  z-index: 9000 !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+.map-modal .modal-content {
+  max-width: 860px !important;
+  width: 92% !important;
+  border-radius: 14px !important;
+  padding: 24px !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18) !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.modal-header h3 {
+  margin: 0;
+  font-family: 'Prompt', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #4a3f35;
+}
+.modal-close { font-size: 24px; cursor: pointer; color: #aaa; line-height: 1; }
+.modal-close:hover { color: #555; }
+
+.btn-modal-confirm {
+  background: #8b7355;
+  color: white;
+  border: none;
+  padding: 11px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Prompt', sans-serif;
+  transition: background 0.2s;
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+}
+.btn-modal-confirm:hover { background: #6b523f; }
+
+/* ── Custom Popup ────────────────────────── */
+.custom-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+.custom-popup-box {
+  background: #fff;
+  padding: 30px 26px;
+  border-radius: 14px;
+  text-align: center;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  animation: popIn 0.25s ease;
+  border: 1px solid #dcd3c6;
+}
+@keyframes popIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+.custom-popup-icon    { font-size: 46px; margin-bottom: 12px; }
+.custom-popup-title   { font-size: 17px; font-weight: 700; margin: 0 0 8px; color: #333; font-family: 'Prompt', sans-serif; }
+.custom-popup-message { font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.6; font-family: 'Prompt', sans-serif; }
+.custom-popup-buttons { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+.btn-popup { padding: 9px 20px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; font-family: 'Prompt', sans-serif; }
+.btn-popup-primary { background: #8b7355; color: white; }
+.btn-popup-primary:hover { background: #6b523f; }
+.btn-popup-danger  { background: #dc3545; color: white; }
+.btn-popup-danger:hover  { background: #c82333; }
+.btn-popup-cancel  { background: #e2e8f0; color: #4a5568; }
+.btn-popup-cancel:hover  { background: #cbd5e0; }
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 900px) {
+  .edit-form { grid-template-columns: 1fr; }
+  .col-span-2-left, .col-span-2-right { grid-column: 1; }
+  .page-wrapper { padding: 12px 14px 32px; }
+}
+@media (max-width: 600px) {
+  .topbar-title { font-size: 14px; }
+  .btn-save-top  { padding: 8px 14px; font-size: 13px; }
+  .btn-cancel-top { padding: 8px 12px; font-size: 13px; }
+  .field-row .field-group { min-width: calc(50% - 5px); }
+  .checkbox-grid { grid-template-columns: 1fr 1fr; }
+  .preview-grid  { grid-template-columns: repeat(auto-fill, minmax(70px,1fr)); }
+}

@@ -1,0 +1,224 @@
+/* =========================================
+   🎨 ตั้งค่าสีหลัก
+   ========================================= */
+:root {
+    --bg-body: #E6E2D8;
+    --bg-chat-area: #F4F1EA;
+    --primary-color: #7A634D;
+    --primary-hover: #5C4A39;
+    --text-main: #2C2C2C;
+    --text-muted: #666666;
+    --border-color: #C8C0B4;
+    --bubble-me: #7A634D;
+    --bubble-me-text: #FFFFFF;
+    --bubble-other: #D9D4C9;
+    --bubble-other-text: #2C2C2C;
+}
+
+body {
+    margin: 0;
+    font-family: 'Prompt', Tahoma, sans-serif;
+    background: var(--bg-body);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;       /* ล็อคไม่ให้ทั้งหน้า scroll */
+    color: var(--text-main);
+}
+
+/* Header */
+.header {
+    background: #ffffff;
+    padding: 15px 20px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.03);
+    border-bottom: 1px solid var(--border-color);
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 10; flex-shrink: 0;
+}
+.logo { display: flex; align-items: center; text-decoration: none; gap: 10px; }
+.logo img { height: 40px; width: auto; }
+.logo span { font-size: 24px; font-weight: 700; color: var(--primary-color); }
+.btn-back {
+    background: #ffffff; border: 1px solid var(--border-color);
+    padding: 8px 15px; border-radius: 8px; cursor: pointer;
+    color: var(--primary-color); text-decoration: none; font-weight: 500; transition: 0.2s;
+}
+.btn-back:hover { background: var(--bg-body); }
+
+/* Layout หลัก */
+.chat-container {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;       /* ล็อคไม่ให้ container ขยายออกไป */
+    background: var(--bg-body);
+}
+
+/* =========================================
+   Sidebar
+   ========================================= */
+.sidebar {
+    width: 320px; background: #ffffff; border-right: 1px solid var(--border-color);
+    display: flex; flex-direction: column; z-index: 5; transition: transform 0.3s ease;
+    overflow: hidden;       /* sidebar เองก็ต้อง overflow hidden */
+}
+.sidebar-header {
+    padding: 20px; font-weight: 600; font-size: 18px;
+    border-bottom: 1px solid var(--border-color); color: var(--text-main);
+}
+.contact-list { overflow-y: auto; flex-grow: 1; }
+.contact-item {
+    display: flex; align-items: center; gap: 15px; padding: 15px 20px;
+    cursor: pointer; border-bottom: 1px solid var(--border-color); transition: 0.2s;
+}
+.contact-item:hover { background: var(--bg-body); }
+.contact-item.active { background: var(--bg-body); border-left: 4px solid var(--primary-color); }
+.contact-avatar {
+    width: 50px; height: 50px; background: var(--bubble-other); border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 22px; color: var(--primary-color); flex-shrink: 0;
+}
+.contact-info { flex-grow: 1; overflow: hidden; }
+.contact-name { font-weight: 500; color: var(--text-main); font-size: 15px; }
+.contact-last-msg {
+    font-size: 13px; color: var(--text-muted); margin-top: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* =========================================
+   Chat Area
+   ========================================= */
+.chat-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-chat-area);
+    position: relative;
+    overflow: hidden;       /* กัน input bar ไม่ให้ถูกดันลง */
+    min-height: 0;          /* จำเป็นสำหรับ flex child ที่ต้องการ overflow */
+}
+.chat-header {
+    padding: 15px 20px; background: #ffffff; border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; gap: 15px;
+    font-weight: 600; color: var(--text-main); font-size: 18px;
+}
+.btn-menu-mobile { display: none; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--primary-color); padding: 0; }
+
+/* Bubbles */
+.chat-messages {
+    flex-grow: 1;
+    padding: 15px 20px;
+    overflow-y: auto;       /* scroll เฉพาะกล่องข้อความ */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;          /* จำเป็นสำหรับ flex child ให้ scroll ได้ */
+}
+.message {
+    max-width: 65%; padding: 8px 14px; border-radius: 16px;
+    font-size: 14.5px; line-height: 1.4; word-wrap: break-word;
+    position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.message.received {
+    background: var(--bubble-other); color: var(--bubble-other-text);
+    align-self: flex-start; border-bottom-left-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+.message.sent {
+    background: var(--bubble-me); color: var(--bubble-me-text);
+    align-self: flex-end; border-bottom-right-radius: 4px;
+}
+.message img { width:260px; height:200px; object-fit:cover; border-radius:8px; margin-top:5px; cursor:pointer; border:1px solid rgba(0,0,0,0.05); display:block; }
+.message-time { font-size: 11px; margin-top: 3px; text-align: right; }
+.received .message-time { color: var(--text-muted); }
+.sent .message-time { color: rgba(255,255,255,0.75); }
+
+/* Input Area */
+.image-preview-container {
+    padding: 10px 20px; background: var(--bg-body);
+    border-top: 1px solid var(--border-color);
+    display: none; align-items: center; gap: 15px;
+}
+.image-preview-container img { height: 60px; border-radius: 8px; border: 1px solid #ccc; }
+.btn-cancel-img {
+    background: #ff4d4d; color: white; border: none; border-radius: 50%;
+    width: 25px; height: 25px; cursor: pointer;
+    display: flex; justify-content: center; align-items: center; font-weight: bold;
+}
+.chat-input {
+    padding: 10px 20px; background: #ffffff; border-top: 1px solid var(--border-color);
+    display: flex; align-items: center; gap: 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+}
+.btn-attach {
+    background: var(--bg-body); color: var(--primary-color); border: 1px solid var(--border-color);
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; font-size: 18px; transition: 0.2s; flex-shrink: 0;
+}
+.btn-attach:hover { background: var(--border-color); }
+.chat-input input[type="text"] {
+    flex-grow: 1; padding: 10px 18px;
+    border: 1px solid var(--border-color); border-radius: 20px;
+    font-size: 14.5px; font-family: 'Prompt', sans-serif;
+    background: var(--bg-body); transition: 0.3s;
+}
+.chat-input input[type="text"]:focus {
+    outline: none; border-color: var(--primary-color); background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(122, 99, 77, 0.15);
+}
+.btn-send {
+    background: var(--primary-color); color: white; border: none;
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; font-size: 16px; transition: 0.3s; flex-shrink: 0;
+}
+.btn-send:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+.empty-chat {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    flex-grow: 1; color: var(--text-muted); font-size: 15px; background: var(--bg-chat-area);
+}
+.empty-chat span { font-size: 45px; margin-bottom: 12px; opacity: 0.3; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar { width: 100%; position: absolute; height: calc(100% - 73px); z-index: 20; }
+    .sidebar.hidden { transform: translateX(-100%); }
+    .chat-area { width: 100%; }
+    .btn-menu-mobile { display: block; }
+    .message { max-width: 85%; }
+}
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 768px) {
+    body { overflow: hidden !important; }
+
+    .chat-container { position: relative !important; overflow: hidden !important; }
+
+    .sidebar {
+        width: 100% !important;
+        position: absolute !important;
+        height: calc(100vh - 60px) !important;
+        z-index: 20 !important;
+        transition: transform 0.3s ease !important;
+        top: 0 !important;
+    }
+    .sidebar.hidden { transform: translateX(-100%) !important; }
+
+    .chat-area { width: 100% !important; overflow: hidden !important; }
+    .btn-menu-mobile { display: block !important; }
+
+    .message { max-width: 85% !important; }
+    .chat-input { padding: 8px 12px !important; gap: 8px !important; }
+    .chat-input input[type="text"] { font-size: 14px !important; padding: 8px 14px !important; }
+    .btn-send, .btn-attach { width: 36px !important; height: 36px !important; font-size: 14px !important; }
+
+    .contact-item { padding: 12px 14px !important; }
+    .contact-avatar { width: 42px !important; height: 42px !important; font-size: 18px !important; }
+    .contact-name { font-size: 14px !important; }
+    .contact-last-msg { font-size: 12px !important; }
+    .sidebar-header { padding: 14px !important; font-size: 16px !important; }
+}
+
+@media (max-width: 480px) {
+    .message { max-width: 90% !important; font-size: 13px !important; }
+}
